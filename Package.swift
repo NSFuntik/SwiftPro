@@ -11,7 +11,7 @@ let package = Package(
     products: [
         .library(
             name: "SwiftUIPlus",
-            targets: ["SwiftUIPlus"]
+            targets: ["SwiftUIPlus", ]
         ),
     ],
     dependencies: [

@@ -16,7 +16,7 @@ extension View {
     /// - Returns: The modified view.
 
     @ViewBuilder @inlinable
-    func `if`<T>(
+    public func `if`<T>(
         _ condition: Bool,
         _ transform: (Self) -> T)
         -> some View where T: View {
@@ -28,7 +28,7 @@ extension View {
     }
 
     @ViewBuilder @inlinable
-    func `if`<T, _T>(
+    public func `if`<T, _T>(
         _ condition: Bool,
         _ transform: (Self) -> T,
         else _transform: (Self) -> _T
@@ -41,16 +41,13 @@ extension View {
     }
 
     @inlinable
-    func frame(box: CGFloat) -> some View { frame(width: box, height: box, alignment: .center) }
+    public func frame(box: CGFloat) -> some View { frame(width: box, height: box, alignment: .center) }
 
     @inlinable
-    func frame(_ size: CGSize) -> some View { frame(width: size.width, height: size.height, alignment: .center) }
+    public func frame(_ size: CGSize) -> some View { frame(width: size.width, height: size.height, alignment: .center) }
 
     @inlinable
-    func spacing() -> some View { modifier(Spacing()) }
-
-    @inlinable
-    func foregroundStyle(_ color: Color) -> some View {
+    public func foregroundStyle(_ color: Color) -> some View {
         if #available(iOS 14, *) {
             return foregroundStyle(AnyShapeStyle(color))
         } else {
@@ -59,7 +56,7 @@ extension View {
     }
 
     @inlinable
-    func padding(_ vertical: CGFloat, _ horizontal: CGFloat) -> some View {
+    public func padding(_ vertical: CGFloat, _ horizontal: CGFloat) -> some View {
         padding(.vertical, vertical)
             .padding(.horizontal, horizontal)
     }
@@ -74,16 +71,19 @@ extension View {
         }
     }
 
-    @inlinable
-    @ViewBuilder func hidden(_ isHidden: Bool) -> some View {
+    @ViewBuilder @inlinable
+    public func hidden(_ isHidden: Bool) -> some View {
         if isHidden {
             hidden()
         } else {
             self
         }
     }
-}
 
+    @inlinable
+    public func spacing() -> some View { modifier(Spacing()) }
+
+}
 @usableFromInline
 struct Spacing: ViewModifier {
     @inlinable
@@ -122,7 +122,7 @@ extension Font {
     }
 }
 
-extension UIColor {
+public extension UIColor {
     fileprivate class func lightColor(withSeed seed: String) -> UIColor {
         srand48(seed.hash)
 
