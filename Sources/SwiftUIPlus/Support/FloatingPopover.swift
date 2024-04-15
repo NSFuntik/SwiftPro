@@ -39,7 +39,7 @@ struct FloatingPopover<Item, PopoverContent>: ViewModifier where Item: Identifia
 
     /// A binding that controls whether the popover should be presented.
     @Binding var item: Item?
-    
+
     /// A closure returning the content of the popover.
     @State var contentBlock: ((Item) -> PopoverContent)?
 
@@ -163,9 +163,12 @@ struct FloatingPopover<Item, PopoverContent>: ViewModifier where Item: Identifia
     }
 }
 
-extension View {
-    
-    @inlinable public func dumpMenu<M, P>(@ViewBuilder menuItems: () -> M, @ViewBuilder preview: () -> P) -> some View where M: View, P: View {
+public extension View {
+    @inlinable
+    func contextMenu<M, P>(
+        @ViewBuilder _ menuItems: () -> M,
+        @ViewBuilder _ preview: () -> P
+    ) -> some View where M: View, P: View {
         if #available(iOS 16, *) {
             return contextMenu(menuItems: menuItems, preview: preview)
         } else {
@@ -177,7 +180,7 @@ extension View {
             }))
         }
     }
-    
+
     @ViewBuilder
     func floatingPopover<Item: Identifiable>(
         item: Binding<Item?>,
@@ -193,7 +196,7 @@ extension View {
             modifier(FloatingPopover(item: item, contentBlock: content))
         }
     }
-    
+
     @ViewBuilder
     func floatingPopover(
         isPresented: Binding<Bool>,

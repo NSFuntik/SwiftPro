@@ -3,14 +3,14 @@ import SwiftUI
 #if os(iOS) || os(macOS)
 
 #if os(iOS)
-typealias PlatformView = UIView
-typealias PlatformViewController = UIViewController
+public typealias PlatformView = UIView
+public typealias PlatformViewController = UIViewController
 #else
-typealias PlatformView = NSView
-typealias PlatformViewController = NSViewController
+public typealias PlatformView = NSView
+public typealias PlatformViewController = NSViewController
 #endif
 
-internal extension PlatformViewController {
+public  extension PlatformViewController {
     func ancestor<ControllerType: PlatformViewController>(ofType type: ControllerType.Type) -> ControllerType? {
         var controller = parent
         while let c = controller {
@@ -52,7 +52,7 @@ internal extension PlatformViewController {
     }
 }
 
-internal extension PlatformView {
+public  extension PlatformView {
     func ancestor<ViewType: PlatformView>(ofType type: ViewType.Type) -> ViewType? {
         var view = superview
         while let s = view {
@@ -105,7 +105,7 @@ internal extension PlatformView {
     }
 }
 
-internal struct Inspector {
+public  struct Inspector {
     var hostView: PlatformView
     var sourceView: PlatformView
     var sourceController: PlatformViewController
@@ -147,12 +147,12 @@ internal struct Inspector {
     }
 }
 
-internal struct Proxy<T> {
+public struct Proxy<T> {
     let inspector: Inspector
     let instance: T
 }
 
-extension View {
+public extension View {
     private func inject<Wrapped>(_ wrapped: Wrapped) -> some View where Wrapped: View {
         overlay(wrapped.frame(width: 0, height: 0))
     }

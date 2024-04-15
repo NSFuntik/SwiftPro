@@ -16,7 +16,7 @@ public extension View {
             isActive: Bool = true,
             _ text: Binding<String?>,
             onClear: @escaping () -> Void = { }
-        ) -> some View where Self == TextField<TextFieldClearButton.Content> {
+        ) -> some View {
         if isActive {
             modifier(TextFieldClearButton(fieldText: text, onClear: onClear))
         }
@@ -27,7 +27,7 @@ public extension View {
             isActive: Bool = true,
             _ text: Binding<String>,
             onClear: (() -> Void)? = nil
-        ) -> some View where Self == TextField<TextFieldClearButton.Content> {
+        ) -> some View {
         if isActive {
             modifier(TextFieldClearButton(fieldText: text, onClear: onClear))
         }

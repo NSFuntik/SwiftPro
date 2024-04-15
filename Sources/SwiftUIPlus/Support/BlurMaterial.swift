@@ -74,7 +74,7 @@ private struct MaterialEffect: UIViewRepresentable {
     func updateUIView(_ uiView: UIVisualEffectView, context: Context) { }
 }
 
-extension View {
+public extension View {
     @ViewBuilder
     func materialBackground<S>(
         with style: UIBlurEffect.Style = .systemMaterialDark,

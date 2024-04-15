@@ -29,7 +29,7 @@ private struct FrameChangeModifier: ViewModifier {
     }
 }
 
-internal extension View {
+public extension View {
     func onFrameChange(coordinateSpace: CoordinateSpace = .global, _ handler: @escaping (CGRect) -> Void) -> some View {
         modifier(FrameChangeModifier(coordinateSpace: coordinateSpace, handler: handler))
     }

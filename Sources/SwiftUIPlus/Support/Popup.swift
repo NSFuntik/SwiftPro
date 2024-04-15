@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension View {
+public extension View {
     func popup<PopupContent: View, Item: Hashable>(
         alignment: Alignment,
         item: Binding<Item?>,

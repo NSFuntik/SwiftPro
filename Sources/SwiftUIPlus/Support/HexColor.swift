@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum ColorError: Error {
+public enum ColorError: Error {
     case invalidHexString
     case invalidScanHexInt64
     case invalidHexDigitInIntegerLiteral

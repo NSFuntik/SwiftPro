@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension View {
+public extension View {
     /// for this to work make sure all the other scrollViews have scrollsToTop = false
     func onStatusBarTap(onTap: @escaping () -> Void) -> some View {
         overlay {
@@ -17,7 +17,7 @@ extension View {
     }
 }
 
-private struct StatusBarTabDetector: UIViewRepresentable {
+fileprivate struct StatusBarTabDetector: UIViewRepresentable {
     var onTap: () -> Void
     
     func makeUIView(context: Context) -> UIView {
