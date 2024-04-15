@@ -8,7 +8,7 @@
 import Foundation
 public enum DataUnits: String {
     case byte, kilobyte, megabyte, gigabyte
-    typealias Value = Double
+    public typealias Value = Double
     var bytes: Value {
         switch self {
         case .byte:
@@ -24,7 +24,7 @@ public enum DataUnits: String {
 
     public typealias Unit = (size: Double, unit: Self)
 
-    static func getInBytes(from unit: Unit) -> Value {
+    public static func getInBytes(from unit: Unit) -> Value {
         return unit.size * unit.unit.bytes
     }
 }
