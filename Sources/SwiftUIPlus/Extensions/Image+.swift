@@ -8,7 +8,7 @@
 import AVFoundation
 import UIKit
 
-extension UIImage.Orientation {
+public extension UIImage.Orientation {
     init(_ cgOrientation: CGImagePropertyOrientation) {
         switch cgOrientation {
         case .up: self = .up
@@ -23,8 +23,8 @@ extension UIImage.Orientation {
     }
 }
 
-extension UIImage {
-    public func fixOrientation() -> UIImage {
+public extension UIImage {
+    func fixOrientation() -> UIImage {
         if imageOrientation == .up {
             return self
         }
@@ -36,7 +36,7 @@ extension UIImage {
         }
     }
 
-    public func scaleToFill(in targetSize: CGSize) -> UIImage {
+    func scaleToFill(in targetSize: CGSize) -> UIImage {
         guard targetSize != .zero else {
             return self
         }
@@ -59,7 +59,7 @@ extension UIImage {
     }
 
     /// Create image with proper orientation
-    public convenience init?(photo: AVFoundation.AVCapturePhoto) {
+    convenience init?(photo: AVFoundation.AVCapturePhoto) {
         guard let cgImage = photo.cgImageRepresentation(),
               let rawOrientation = photo.metadata[String(kCGImagePropertyOrientation)] as? UInt32,
               let cgOrientation = CGImagePropertyOrientation(rawValue: rawOrientation) else {
@@ -103,6 +103,6 @@ extension UIImage {
         }
     }
 
-    public var png: Data? { pngData() }
-    public func jpg(quality: CGFloat) -> Data? { jpegData(compressionQuality: quality) }
+    var png: Data? { pngData() }
+    func jpg(quality: CGFloat) -> Data? { jpegData(compressionQuality: quality) }
 }

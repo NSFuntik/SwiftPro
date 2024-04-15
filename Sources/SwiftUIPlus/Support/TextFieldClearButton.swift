@@ -1,40 +1,40 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Dmitry Mikhaylov on 16.04.2024.
 //
 
 import SwiftUI
-extension View {
+public extension View {
     /// Adds a clear button to the view, allowing users to easily clear the text input.
     ///
     /// - Parameter text: A binding to the text input that the clear button will operate on.
     /// - Returns: A view with the clear button added when the text is not empty.
-    @ViewBuilder @inlinable func
-    clearButton(
-        isActive: Bool = true,
-        _ text: Binding<String?>,
-        onClear: @escaping () -> Void = { }) -> some View where Self == TextField<TextFieldClearButton.Content> {
-            if isActive {
-                modifier(TextFieldClearButton(fieldText: text, onClear: onClear))
-            }
-        }
-    
-    @ViewBuilder @inlinable func
-    clearButton(
-        isActive: Bool = true,
-        _ text: Binding<String>,
-        onClear: (() -> Void)? = nil
-    ) -> some View where Self == TextField<TextFieldClearButton.Content> {
+    @ViewBuilder func
+        clearButton(
+            isActive: Bool = true,
+            _ text: Binding<String?>,
+            onClear: @escaping () -> Void = { }
+        ) -> some View where Self == TextField<TextFieldClearButton.Content> {
         if isActive {
             modifier(TextFieldClearButton(fieldText: text, onClear: onClear))
         }
     }
 
+    @ViewBuilder func
+        clearButton(
+            isActive: Bool = true,
+            _ text: Binding<String>,
+            onClear: (() -> Void)? = nil
+        ) -> some View where Self == TextField<TextFieldClearButton.Content> {
+        if isActive {
+            modifier(TextFieldClearButton(fieldText: text, onClear: onClear))
+        }
+    }
 }
-@usableFromInline
-struct TextFieldClearButton: ViewModifier {
+@frozen
+public struct TextFieldClearButton: ViewModifier {
     public init(
         fieldText: Binding<String?>,
         onClear: @escaping () -> Void
@@ -42,7 +42,7 @@ struct TextFieldClearButton: ViewModifier {
         _fieldText = fieldText.unwrapped("")
         completion = onClear
     }
-    
+
     public init(
         fieldText: Binding<String>,
         onClear: (() -> Void)?
@@ -50,15 +50,15 @@ struct TextFieldClearButton: ViewModifier {
         _fieldText = fieldText
         completion = onClear
     }
-    
+
     /// A binding to the text input that the clear button will operate on.
     @Binding var fieldText: String
-    
+
     var completion: (() -> Void)?
     /// Adds the clear button to the view.
     /// - Parameter content: The content view (e.g., a `TextField`) to which the clear button will be added.
     /// - Returns: A view with the clear button added when the text is not empty.
-    @ViewBuilder @usableFromInline
+    @ViewBuilder public
     func body(content: Content) -> some View {
         content
             .safeAreaInset(edge: .trailing) {

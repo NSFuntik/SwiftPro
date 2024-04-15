@@ -6,8 +6,8 @@
 //
 
 import Foundation
-// import OrderedCollections
-extension Optional where Wrapped: Collection {
+
+public extension Optional where Wrapped: Collection {
     var isEmpty: Bool {
         self?.endIndex == self?.startIndex
     }
@@ -17,7 +17,7 @@ extension Optional where Wrapped: Collection {
     }
 }
 
-extension Array {
+public extension Array {
     func asyncMap<T>(
         _ transform: (Element) async throws -> T
     ) async rethrows -> [T] {
@@ -44,10 +44,10 @@ extension Array {
         return values
     }
     
-    @inlinable public var lastIndex: Int { endIndex - 1 }
+    @inlinable var lastIndex: Int { endIndex - 1 }
 }
 
-extension RandomAccessCollection where Element: Equatable {
+public extension RandomAccessCollection where Element: Equatable {
     subscript(safe index: Index?) -> Element? {
         get {
             guard let index else { return nil }
@@ -62,14 +62,14 @@ extension RandomAccessCollection where Element: Equatable {
     }
 }
 
-extension Sequence where Iterator.Element: Hashable {
+public  extension Sequence where Iterator.Element: Hashable {
     func unique() -> [Iterator.Element] {
         var seen: Set<Iterator.Element> = []
         return filter { seen.insert($0).inserted }
     }
 }
 
-extension Dictionary where Value == Optional<Any> {
+public extension Dictionary where Value == Optional<Any> {
     func removingNilValues() -> [Key: Any] {
         self.compactMapValues {
             guard let value = $0 else { return nil }
@@ -91,7 +91,7 @@ extension Dictionary where Value == Optional<Any> {
     }
 }
 
-extension Dictionary where Value == Value {
+public  extension Dictionary where Value == Value {
     var keyValuePairs: [(key: String, value: String)] {
         self.jsonElements.compactMap({ ("\($0.key)", "\(String(describing: $0.value))") })
     }
@@ -110,5 +110,5 @@ extension Dictionary where Value == Value {
     }
 }
 
-extension Dictionary where Value == Optional<Any> {
+public extension Dictionary where Value == Optional<Any> {
 }

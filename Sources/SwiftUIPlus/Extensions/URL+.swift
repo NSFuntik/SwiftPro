@@ -7,13 +7,13 @@
 
 import Foundation
 
-extension URLComponents {
+public extension URLComponents {
     mutating func setQueryItems(with parameters: [String: String]) {
         queryItems = parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
     }
 }
 
-extension URL {
+public extension URL {
     mutating func appending(query: [URLQueryItem]) -> URL {
         guard var components: URLComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
             let percentEncodedQuery: String = "?".appending(query.compactMap({ $0.name + (($0.value ?? "").isEmpty ? "" : "=".appending($0.value!)) }).joined(separator: "&"))

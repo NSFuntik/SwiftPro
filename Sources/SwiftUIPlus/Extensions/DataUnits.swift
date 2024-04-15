@@ -29,7 +29,7 @@ public enum DataUnits: String {
     }
 }
 
-extension UInt64 {
+public extension UInt64 {
     func getSizeIn(_ type: DataUnits) -> String {
         var size: Double = 0.0
         switch type {

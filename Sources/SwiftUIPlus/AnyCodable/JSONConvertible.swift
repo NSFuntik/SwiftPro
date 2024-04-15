@@ -17,7 +17,7 @@ extension Bool: JSONConvertible {}
 extension Int: JSONConvertible {}
 extension UInt: JSONConvertible {}
 
-func jsonConvertibleObject<T>(_ value: T) -> Any {
+public func jsonConvertibleObject<T>(_ value: T) -> Any {
     if case let reflectedStringConvertible as ReflectedStringConvertible = value {
         // handle ReflectedStringConvertibles recursively.
         return reflectedStringConvertible.dictionary(Mirror(reflecting: reflectedStringConvertible).allChildren)
@@ -37,7 +37,7 @@ protocol JSONConvertibleCollection {
     var jsonConvertibleObjects: [Any] { get }
 }
 
-protocol JSONConvertibleDictionary {
+public protocol JSONConvertibleDictionary {
     var jsonConvertibleElements: [String: Any] { get }
 }
 
@@ -54,7 +54,7 @@ extension Set: JSONConvertibleCollection {
 }
 
 extension Dictionary: JSONConvertibleDictionary {
-    var jsonConvertibleElements: [String: Any] {
+    public var jsonConvertibleElements: [String: Any] {
         var dict: [String: Any] = [:]
         for (key, value) in self {
             dict[String(describing: key)] = jsonConvertibleObject(value)
@@ -88,11 +88,11 @@ public enum Style {
     case json
 }
 
-extension ReflectedStringConvertible {
+public extension ReflectedStringConvertible {
     /// A detailed textual representation of `self`.
     ///
     /// - parameter style: The style of the textual representation.
-    public func reflectedDescription(_ style: Style) -> String {
+    func reflectedDescription(_ style: Style) -> String {
         switch style {
         case .normal:
             return self.description
@@ -103,7 +103,7 @@ extension ReflectedStringConvertible {
 
     /// A `Normal` style detailed textual representation of `self`. This is the same as calling
     /// `reflectedDescription(.normal)`
-    public var description: String {
+    var description: String {
         let mirror = Mirror(reflecting: self)
 
         let descriptions: [String] = mirror
@@ -183,7 +183,7 @@ struct JSONCodingKeys: CodingKey {
     }
 }
 
-extension KeyedDecodingContainer {
+public extension KeyedDecodingContainer {
     func decode(_ type: Dictionary<String, Any>.Type, forKey key: K) throws -> Dictionary<String, Any> {
         let container = try self.nestedContainer(keyedBy: JSONCodingKeys.self, forKey: key)
         return try container.decode(type)
@@ -236,7 +236,7 @@ extension KeyedDecodingContainer {
     }
 }
 
-extension UnkeyedDecodingContainer {
+public extension UnkeyedDecodingContainer {
     mutating func decode(_ type: Array<Any>.Type) throws -> Array<Any> {
         var array: [Any] = []
         while isAtEnd == false {

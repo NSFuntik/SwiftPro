@@ -7,8 +7,8 @@
 
 import Foundation
 
-extension ISO8601DateFormatter {
-    public static var full: ISO8601DateFormatter {
+public extension ISO8601DateFormatter {
+    static var full: ISO8601DateFormatter {
         let isoDateFormatter = ISO8601DateFormatter()
         isoDateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds, .withFullDate]
         isoDateFormatter.timeZone = .autoupdatingCurrent
@@ -16,8 +16,8 @@ extension ISO8601DateFormatter {
     }
 }
 
-extension DateFormatter {
-    public convenience init(dateFormat: String = ISO8601DateFormatter.string(from: .now, timeZone: .autoupdatingCurrent)) {
+public extension DateFormatter {
+     convenience init(dateFormat: String = ISO8601DateFormatter.string(from: .now, timeZone: .autoupdatingCurrent)) {
         self.init()
         locale = Locale.current
         self.dateFormat = dateFormat
@@ -54,8 +54,8 @@ extension DateFormatter {
     }
 }
 
-extension Date {
-    public init?(string dateString: String?, format: String? = nil) throws {
+public extension Date {
+    init?(string dateString: String?, format: String? = nil) throws {
         guard let dateString, let format else {
             throw CocoaError(.coderValueNotFound)
         }
@@ -80,7 +80,7 @@ extension Date {
     }
 }
 
-extension Date {
+public extension Date {
     func fullDistance(from date: Date, resultIn component: Calendar.Component, calendar: Calendar = .current) -> Int? {
         calendar.dateComponents([component], from: self, to: date).value(for: component)
     }
@@ -96,7 +96,7 @@ extension Date {
     }
 }
 
-extension Date {
+public extension Date {
     /// Timestamp in milliseconds
     var timestamp: Int64 {
         return Int64(self.timeIntervalSince1970 * 1000)

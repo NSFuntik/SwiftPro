@@ -8,7 +8,7 @@ import AdSupport
 import AppTrackingTransparency
 import UIKit
 
-extension UIView {
+public extension UIView {
     func closestVC() -> UIViewController? {
         var responder: UIResponder? = self
         while responder != nil {
@@ -21,12 +21,12 @@ extension UIView {
     }
 }
 
-extension UIScreen {
+public extension UIScreen {
     @nonobjc
-    public static var mainScreen: UIScreen { .main }
+    static var mainScreen: UIScreen { .main }
     
     @nonobjc
-    public static var orientation: UIDeviceOrientation {
+    static var orientation: UIDeviceOrientation {
         let point = UIScreen.mainScreen.coordinateSpace.convert(CGPoint.zero, to: UIScreen.mainScreen.fixedCoordinateSpace)
         if point == CGPoint.zero {
             return .portrait
@@ -42,7 +42,7 @@ extension UIScreen {
     }
 }
 
-extension UIDevice {
+public extension UIDevice {
     static var isIPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
     }
@@ -71,7 +71,7 @@ extension UIDevice {
     }
 }
 
-extension CGFloat {
+public extension CGFloat {
     @inline(__always)
     static var screenWidth: CGFloat {
         return UIScreen.mainScreen.bounds.width
@@ -83,7 +83,7 @@ extension CGFloat {
     }
 }
 
-extension UIApplication {
+public extension UIApplication {
     var keyWindow: UIWindow? {
         return UIApplication.shared.connectedScenes
             .filter { $0.activationState == .foregroundActive }
@@ -101,7 +101,7 @@ extension UIApplication {
     }
 }
 
-extension UIApplication {
+public extension UIApplication {
     func endEditing(action: () -> Void = { }) {
         sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         action()

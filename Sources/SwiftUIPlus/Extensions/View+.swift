@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension View {
+public extension View {
     /// Applies a modifier to a view conditionally.
     ///
     /// - Parameters:
@@ -16,7 +16,7 @@ extension View {
     /// - Returns: The modified view.
 
     @ViewBuilder @inlinable
-    public func `if`<T>(
+    func `if`<T>(
         _ condition: Bool,
         _ transform: (Self) -> T)
         -> some View where T: View {
@@ -28,7 +28,7 @@ extension View {
     }
 
     @ViewBuilder @inlinable
-    public func `if`<T, _T>(
+    func `if`<T, _T>(
         _ condition: Bool,
         _ transform: (Self) -> T,
         else _transform: (Self) -> _T
@@ -41,13 +41,13 @@ extension View {
     }
 
     @inlinable
-    public func frame(box: CGFloat) -> some View { frame(width: box, height: box, alignment: .center) }
+    func frame(box: CGFloat) -> some View { frame(width: box, height: box, alignment: .center) }
 
     @inlinable
-    public func frame(_ size: CGSize) -> some View { frame(width: size.width, height: size.height, alignment: .center) }
+    func frame(_ size: CGSize) -> some View { frame(width: size.width, height: size.height, alignment: .center) }
 
     @inlinable
-    public func foregroundStyle(_ color: Color) -> some View {
+    func foregroundStyle(_ color: Color) -> some View {
         if #available(iOS 14, *) {
             return foregroundStyle(AnyShapeStyle(color))
         } else {
@@ -56,14 +56,14 @@ extension View {
     }
 
     @inlinable
-    public func padding(_ vertical: CGFloat, _ horizontal: CGFloat) -> some View {
+    func padding(_ vertical: CGFloat, _ horizontal: CGFloat) -> some View {
         padding(.vertical, vertical)
             .padding(.horizontal, horizontal)
     }
 
     ///
 
-    @inlinable public func backgroundStyled<S>(_ style: S) -> some View where S: ShapeStyle {
+    @inlinable func backgroundStyled<S>(_ style: S) -> some View where S: ShapeStyle {
         if #available(iOS 16, *) {
             return backgroundStyle(style)
         } else {
@@ -72,7 +72,7 @@ extension View {
     }
 
     @ViewBuilder @inlinable
-    public func hidden(_ isHidden: Bool) -> some View {
+    func hidden(_ isHidden: Bool) -> some View {
         if isHidden {
             hidden()
         } else {
@@ -81,7 +81,7 @@ extension View {
     }
 
     @inlinable
-    public func spacing() -> some View { modifier(Spacing()) }
+    func spacing() -> some View { modifier(Spacing()) }
 
 }
 @usableFromInline
