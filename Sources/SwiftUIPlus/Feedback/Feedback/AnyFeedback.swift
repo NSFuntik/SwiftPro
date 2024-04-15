@@ -10,25 +10,28 @@ public struct AnyFeedback: Feedback {
     }
 
     /// Asks the type-erased feedback to perform
+    @MainActor
     public func perform() async {
         await haptic.perform()
     }
 
-   private var task: Task<Void, Never> {
+    @MainActor
+    private var task: Task<Void, Never> {
         return Task<Void, Never> {
             if Task.isCancelled {
                 debugPrint("􀪅 New message sound cancelled")
-                
+
             } else {
                 debugPrint("􀐣 New Message playing ")
                 await self.delay(0.666).perform()
             }
         }
     }
-    
-    func play() async {
+
+    @MainActor
+    public func play() async {
         self.task.cancel()
-        
+
         _ = self.task
     }
 }

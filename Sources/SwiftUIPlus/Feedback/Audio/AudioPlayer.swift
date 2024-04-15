@@ -15,7 +15,7 @@ public final class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegat
     private var player: AVAudioPlayer?
 
     @MainActor
-    func play(audio: Audio) async throws {
+    public func play(audio: Audio) async throws {
         #if os(iOS)
             await stop()
 
