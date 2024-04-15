@@ -20,7 +20,6 @@ public extension View {
 }
 
 struct Popup<PopupContent: View, Item: Hashable>: ViewModifier {
-    @Environment(\.dismiss) var dismiss
     @ViewBuilder
     func body(content: Content) -> some View {
         content
@@ -74,7 +73,6 @@ struct Popup<PopupContent: View, Item: Hashable>: ViewModifier {
                 .onAppear(perform: {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 4.20, execute: {
                         self.item = .none
-                        dismiss()
                     })
                 })
             }
