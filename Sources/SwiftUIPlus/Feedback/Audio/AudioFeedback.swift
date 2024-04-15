@@ -21,7 +21,11 @@ public extension EnvironmentValues {
 
 public struct AudioFeedback: Feedback, ViewModifier {
     @Environment(\.audioPlayer) private var player
-    public typealias Body = Never
+
+    public func body(content: Content) -> some View {
+        content
+            .environmentObject(player)
+    }
 
     var audio: Audio
 
