@@ -13,4 +13,22 @@ public struct AnyFeedback: Feedback {
     public func perform() async {
         await haptic.perform()
     }
+
+   private var task: Task<Void, Never> {
+        return Task<Void, Never> {
+            if Task.isCancelled {
+                debugPrint("􀪅 New message sound cancelled")
+                
+            } else {
+                debugPrint("􀐣 New Message playing ")
+                await self.delay(0.666).perform()
+            }
+        }
+    }
+    
+    func play() async {
+        self.task.cancel()
+        
+        _ = self.task
+    }
 }

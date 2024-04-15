@@ -1,5 +1,5 @@
-import SwiftUI
 import AVFoundation
+import SwiftUI
 
 private enum PlayerError: LocalizedError {
     case badUrl(Audio)
@@ -11,23 +11,24 @@ private enum PlayerError: LocalizedError {
     }
 }
 
-internal final class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
+public final class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
     private var player: AVAudioPlayer?
-    
+
     @MainActor
     func play(audio: Audio) async throws {
-#if os(iOS)
-        await stop()
+        #if os(iOS)
+            await stop()
 
-        try AVAudioSession.sharedInstance().setCategory(.ambient)
-        try AVAudioSession.sharedInstance().setActive(true)
-#endif
-
-        player = try AVAudioPlayer(contentsOf: audio.url)
-        player?.delegate = self
-        player?.play()
+            try AVAudioSession.sharedInstance().setCategory(.ambient)
+            try AVAudioSession.sharedInstance().setActive(true)
+        #endif
+        try await MainActor.run {
+            player = try AVAudioPlayer(contentsOf: audio.url)
+            player?.delegate = self
+            player?.play()
+        }
     }
-    
+
     @MainActor
     func stop() async {
         player?.stop()
@@ -35,7 +36,7 @@ internal final class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDeleg
     }
 
     @MainActor
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         Task { await stop() }
     }
 }

@@ -8,28 +8,29 @@ public extension AnyFeedback {
     }
 }
 
-private struct AudioPlayerEnvironmentKey: EnvironmentKey {
-    static var defaultValue: AudioPlayer = .init()
+public struct AudioPlayerEnvironmentKey: EnvironmentKey {
+    public static var defaultValue: AudioPlayer = .init()
 }
 
-private extension EnvironmentValues {
+public extension EnvironmentValues {
     var audioPlayer: AudioPlayer {
         get { self[AudioPlayerEnvironmentKey.self] }
         set { self[AudioPlayerEnvironmentKey.self] = newValue }
     }
 }
 
-private struct AudioFeedback: Feedback, ViewModifier {
+public struct AudioFeedback: Feedback, ViewModifier {
     @Environment(\.audioPlayer) private var player
-    typealias Body = Never
-    
+    public typealias Body = Never
+
     var audio: Audio
-    
+
     init(audio: Audio) {
         self.audio = audio
     }
-    
-    func perform() async {
+
+    @MainActor
+    public func perform() async {
         do {
             try await player.play(audio: audio)
         } catch {

@@ -1,4 +1,4 @@
-// swift-tools-version: 5.8
+// swift-tools-version: 5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,10 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SwiftUIPlus",
     platforms: [
-        .iOS(.v13),
-        .macOS(.v10_15),
-        .tvOS(.v13),
-        .watchOS(.v6)
+        .iOS(.v15)
     ],
     products: [
         .library(
@@ -18,9 +15,14 @@ let package = Package(
         ),
     ],
     dependencies: [
+        .package(url:"https://github.com/apple/swift-collections.git",
+                 .upToNextMajor(from: "1.1.0")),
         .package(url: "https://github.com/shaps80/SwiftUIBackports", from: "2.8.0")
     ],
     targets: [
-        .target(name: "SwiftUIPlus", dependencies: ["SwiftUIBackports"])
+        .target(name: "SwiftUIPlus", dependencies: [
+            "SwiftUIBackports",
+            .product(name: "OrderedCollections", package: "swift-collections")
+        ])
     ]
 )

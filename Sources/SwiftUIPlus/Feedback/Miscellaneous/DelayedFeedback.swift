@@ -12,6 +12,7 @@ private struct DelayedFeedback: Feedback {
     let duration: Double
     let haptic: any Feedback
     
+    @MainActor
     public func perform() async {
         do {
             try await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
