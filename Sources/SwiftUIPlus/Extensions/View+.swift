@@ -46,7 +46,16 @@ public extension View {
     @inlinable
     func frame(_ size: CGSize) -> some View { frame(width: size.width, height: size.height, alignment: .center) }
 
+    @inlinable
+    func color(_ color: Color) -> some View {
+        if #available(iOS 14, *) {
+            return foregroundStyle(AnyShapeStyle(color))
+        } else {
+            return foregroundColor(color)
+        }
+    }
     
+    @inlinable
     func foregroundStyle(_ color: Color) -> some View {
         if #available(iOS 14, *) {
             return foregroundStyle(AnyShapeStyle(color))
