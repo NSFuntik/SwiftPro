@@ -70,28 +70,6 @@ public extension UIImage {
         self.init(cgImage: cgImage, scale: 1, orientation: imageOrientation)
     }
 
-    func getSizeString(in units: DataUnits) -> String {
-        return String(format: "%.2f", getSizeValue(in: units))
-    }
-
-    func getSizeValue(in type: DataUnits) -> Double {
-        guard let data = jpegData(compressionQuality: 1.0) else {
-            return 0
-        }
-        var size: Double = 0.0
-        switch type {
-        case .byte:
-            size = Double(data.count)
-        case .kilobyte:
-            size = Double(data.count) / 1024
-        case .megabyte:
-            size = Double(data.count) / 1024 / 1024
-        case .gigabyte:
-            size = Double(data.count) / 1024 / 1024 / 1024
-        }
-        return size
-    }
-
     // MARK: - UIImage+Resize
 
     func resized(withPercentage percentage: CGFloat, isOpaque: Bool = true) -> UIImage? {
