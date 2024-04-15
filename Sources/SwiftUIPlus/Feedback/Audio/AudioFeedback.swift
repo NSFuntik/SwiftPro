@@ -27,10 +27,10 @@ public struct AudioFeedback: Feedback, ViewModifier {
             .environmentObject(player)
     }
 
-    var audio: Audio
+   @State var audio: Audio
 
     init(audio: Audio) {
-        self.audio = audio
+        self._audio = State(wrappedValue: audio)
     }
 
     @MainActor
