@@ -13,7 +13,7 @@ public extension SFSymbol {
     static func findSymbol(by input: String) -> SFSymbol? {
         guard input.isEmpty == false else { return nil }
         let allSymbols = SFSymbol.allCases
-        var minimumDistance = min(input.count, Int.min)
+        var minimumDistance = Int.max
         var mostSimilarSymbol: SFSymbol?
         
         for symbol in allSymbols {
