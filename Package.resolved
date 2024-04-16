@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "sfsymbolenum",
+      "kind" : "remoteSourceControl",
+      "location" : "https://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@github.com/NSFuntik/SFSymbolEnum",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6a8cb4993b6b3a0e9941ba2049ba868397142794"
+      }
+    },
+    {
       "identity" : "swift-collections",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-collections.git",
