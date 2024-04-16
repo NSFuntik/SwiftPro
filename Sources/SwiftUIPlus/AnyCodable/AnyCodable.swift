@@ -19,7 +19,7 @@ import Foundation
         self.value = value ?? ()
     }
 }
-extension Encodable {
+public extension Encodable {
     /// Encode into JSON and return `Data`
     func jsonData() throws -> Data {
         let encoder = JSONEncoder()
