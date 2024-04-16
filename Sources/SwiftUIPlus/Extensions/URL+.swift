@@ -110,7 +110,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var applicationDirectory: URL {
+    static var application: URL {
         FileManager.default.urls(for: .applicationDirectory, in: .userDomainMask).first!
     }
 
@@ -119,7 +119,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var applicationSupportDirectory: URL {
+    static var applicationSupport: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
     }
 
@@ -128,7 +128,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var cachesDirectory: URL {
+    static var caches: URL {
         FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
 
@@ -137,7 +137,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var desktopDirectory: URL {
+    static var desktop: URL {
         FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!
     }
 
@@ -146,7 +146,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var documentsDirectory: URL {
+    static var documents: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }
 
@@ -155,7 +155,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var downloadsDirectory: URL {
+    static var downloads: URL {
         FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
     }
 
@@ -163,7 +163,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var homeDirectory: URL {
+    static var home: URL {
         URL(fileURLWithPath: NSHomeDirectory())
     }
 
@@ -172,7 +172,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var libraryDirectory: URL {
+    static var library: URL {
         FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first!
     }
 
@@ -181,7 +181,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var moviesDirectory: URL {
+    static var movies: URL {
         FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first!
     }
 
@@ -190,7 +190,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var musicDirectory: URL {
+    static var music: URL {
         FileManager.default.urls(for: .musicDirectory, in: .userDomainMask).first!
     }
 
@@ -199,7 +199,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var picturesDirectory: URL {
+    static var pictures: URL {
         FileManager.default.urls(for: .picturesDirectory, in: .userDomainMask).first!
     }
 
@@ -208,7 +208,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var sharedPublicDirectory: URL {
+    static var sharedPublic: URL {
         FileManager.default.urls(for: .sharedPublicDirectory, in: .userDomainMask).first!
     }
 
@@ -217,7 +217,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var temporaryDirectory: URL {
+    static var temporary: URL {
         URL(fileURLWithPath: NSTemporaryDirectory())
     }
 
@@ -227,7 +227,7 @@ public extension URL {
         @available(macOS, introduced: 10.12, obsoleted: 13.0)
         @available(tvOS, introduced: 10.0, obsoleted: 16.0)
         @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-        static var trashDirectory: URL {
+        static var trash: URL {
             FileManager.default.urls(for: .trashDirectory, in: .localDomainMask).first!
         }
     #endif
@@ -237,7 +237,7 @@ public extension URL {
     @available(macOS, introduced: 10.12, obsoleted: 13.0)
     @available(tvOS, introduced: 10.0, obsoleted: 16.0)
     @available(watchOS, introduced: 3.0, obsoleted: 9.0)
-    static var userDirectory: URL {
+    static var user: URL {
         FileManager.default.urls(for: .userDirectory, in: .localDomainMask).first!
     }
 }
