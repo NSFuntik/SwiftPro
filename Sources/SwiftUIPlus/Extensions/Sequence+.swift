@@ -62,10 +62,20 @@ public extension RandomAccessCollection where Element: Equatable {
     }
 }
 
-public  extension Sequence where Iterator.Element: Hashable {
+public extension Sequence where Iterator.Element: (Hashable & Comparable) {
     func unique() -> [Iterator.Element] {
         var seen: Set<Iterator.Element> = []
         return filter { seen.insert($0).inserted }
+    }
+    
+    func unique(by areInIncreasingOrder: (Iterator.Element, Iterator.Element) -> Bool) -> [Iterator.Element] {
+        var uniqueElements: Set<Iterator.Element> = []
+        forEach { element in
+            if !uniqueElements.contains(where: { areInIncreasingOrder($0, element) }) {
+                uniqueElements.insert(element)
+            }
+        }
+        return uniqueElements.sorted()
     }
 }
 
