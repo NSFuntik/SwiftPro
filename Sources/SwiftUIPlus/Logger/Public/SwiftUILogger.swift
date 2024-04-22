@@ -8,7 +8,7 @@ open class SwiftUILogger: ObservableObject {
     public enum Level: Int {
         case success, info, warning, error, fatal, debug, trace
 
-       public var description: String {
+        public var description: String {
             switch self {
             case .success: return "Success"
             case .info: return "Info"
@@ -201,8 +201,6 @@ open class SwiftUILogger: ObservableObject {
         _ file: StaticString = #fileID,
         _ line: Int = #line
     ) {
-      
-
         guard Thread.isMainThread else {
             return DispatchQueue.main.async {
                 self.log(level, message, error, tags, file, line)
@@ -211,29 +209,29 @@ open class SwiftUILogger: ObservableObject {
 
         lock.lock()
         defer {
-            let osLog = Logger(subsystem: Bundle.main.description, category: #function)
+            let osLog = Logger(subsystem: Bundle.debugDescription(), category: file.description.appending(" \(line)"))
             switch level {
-            case .debug, .success: osLog.debug  ("\(level.symbol) \(message)")
-            case .trace: osLog.trace            ("\(level.symbol) \(message)")
-            case .info: osLog.info              ("\(level.symbol) \(message)")
-            case .warning: osLog.warning        ("\(level.symbol) \(message)")
-            case .error: osLog.error            ("\(level.symbol) \(message)")
-            case .fatal: osLog.fault            ("\(level.symbol) \(message)")
+            case .debug, .success: osLog.debug("\(level.symbol) \(message)")
+            case .trace: osLog.trace("\(level.symbol) \(message)")
+            case .info: osLog.info("\(level.symbol) \(message)")
+            case .warning: osLog.warning("\(level.symbol) \(message)")
+            case .error: osLog.error("\(level.symbol) \(message)")
+            case .fatal: osLog.fault("\(level.symbol) \(message)")
             }
             lock.unlock()
         }
-
-        logs.append(
-            Event(
-                level: level,
-                message: message,
-                error: error,
-                tags: tags,
-                file,
-                line
+        DispatchQueue.main.async {
+            self.logs.append(
+                Event(
+                    level: level,
+                    message: message,
+                    error: error,
+                    tags: tags,
+                    file,
+                    line
+                )
             )
-        )
-        
+        }
     }
 
     ///
