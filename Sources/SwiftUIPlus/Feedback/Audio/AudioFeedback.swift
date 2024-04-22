@@ -9,7 +9,7 @@ public extension AnyFeedback {
 }
 
 public struct AudioPlayerEnvironmentKey: EnvironmentKey {
-    public static var defaultValue: AudioPlayer = .init()
+    public static var defaultValue: AudioPlayer = AudioPlayer.shared
 }
 
 public extension EnvironmentValues {
