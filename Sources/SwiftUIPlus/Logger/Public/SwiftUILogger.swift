@@ -139,7 +139,7 @@ open class SwiftUILogger: ObservableObject {
     public static var `default`: SwiftUILogger = SwiftUILogger()
 
     ///
-    private var lock: NSLock
+    @usableFromInline var lock: NSLock
 
     ///
     public let name: String?
@@ -193,7 +193,8 @@ open class SwiftUILogger: ObservableObject {
     }
 
     ///
-    open func log(
+    
+    @usableFromInline func log(
         _ level: Level,
         _ message: String,
         _ error: Error? = nil,
@@ -235,7 +236,7 @@ open class SwiftUILogger: ObservableObject {
     }
 
     ///
-    open func trace(
+   @inlinable open func trace(
         _ message: String,
         _ tags: [any LogTagging] = [],
         _ file: StaticString = #fileID,
@@ -252,7 +253,7 @@ open class SwiftUILogger: ObservableObject {
     }
 
     ///
-    open func success(
+    @inlinable open func success(
         _ message: String,
         _ tags: [any LogTagging] = [],
         _ file: StaticString = #fileID,
@@ -268,7 +269,7 @@ open class SwiftUILogger: ObservableObject {
         )
     }
 
-    open func debug(
+    @inlinable open func debug(
         _ message: String,
         _ tags: [any LogTagging] = [],
         _ file: StaticString = #fileID,
@@ -285,7 +286,7 @@ open class SwiftUILogger: ObservableObject {
     }
 
     ///
-    open func info(
+    @inlinable open func info(
         _ message: String,
         _ tags: [any LogTagging] = [],
         _ file: StaticString = #fileID,
@@ -302,7 +303,7 @@ open class SwiftUILogger: ObservableObject {
     }
 
     ///
-    open func warning(
+    @inlinable open func warning(
         _ message: String,
         _ tags: [any LogTagging] = [],
         _ file: StaticString = #fileID,
@@ -318,7 +319,7 @@ open class SwiftUILogger: ObservableObject {
         )
     }
 
-    open func fault(
+    @inlinable open func fault(
         _ message: String,
         _ tags: [any LogTagging] = [],
         _ file: StaticString = #fileID,
@@ -335,7 +336,7 @@ open class SwiftUILogger: ObservableObject {
     }
 
     ///
-    open func error(
+    @inlinable open func error(
         _ message: String,
         error: Error? = nil,
         _ tags: [any LogTagging] = [],
@@ -353,7 +354,7 @@ open class SwiftUILogger: ObservableObject {
     }
 
     ///
-    open func fatal(
+    @inlinable open func fatal(
         _ message: String,
         error: Error?,
         _ tags: [any LogTagging] = [],
