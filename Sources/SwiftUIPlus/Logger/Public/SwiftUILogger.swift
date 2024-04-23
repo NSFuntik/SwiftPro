@@ -193,8 +193,8 @@ open class SwiftUILogger: ObservableObject {
     }
 
     ///
-    
-    @usableFromInline func log(
+
+    @inlinable open func log(
         _ level: Level,
         _ message: String,
         _ error: Error? = nil,
@@ -236,7 +236,7 @@ open class SwiftUILogger: ObservableObject {
     }
 
     ///
-   @inlinable open func trace(
+    @inlinable open func trace(
         _ message: String,
         _ tags: [any LogTagging] = [],
         _ file: StaticString = #fileID,
