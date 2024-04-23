@@ -38,7 +38,9 @@ public enum ColorError: Error {
     }
 }
 
-extension Color {
+public extension Color {
+    var uiColor: UIColor { UIColor(self) }
+
     init?(hex: String) throws {
         var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
         hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
@@ -71,8 +73,8 @@ extension Color {
     }
 }
 
-extension UIColor {
-    public var color: Color {
+public extension UIColor {
+    var color: Color {
         Color(uiColor: self)
     }
 }
