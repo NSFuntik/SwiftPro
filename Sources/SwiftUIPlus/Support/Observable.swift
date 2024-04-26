@@ -8,7 +8,7 @@
 import SwiftUI
 
 public protocol Observable: ObservableObject {}
-extension View {
+public extension View {
     /// Places a perceptible object in the view’s environment.
     ///
     /// A backport of SwiftUI's `View.environment` that takes an observable object.
@@ -16,8 +16,7 @@ extension View {
     /// - Parameter object: The object to set for this object's type in the environment, or `nil` to
     ///   clear an object of this type from the environment.
     /// - Returns: A view that has the specified object in its environment.
-    @_disfavoredOverload
-    public func environment<T: AnyObject & Observable>(_ object: T?) -> some View {
+    func environment<T: AnyObject & Observable>(_ object: T?) -> some View {
         self.environment(\.[\T.self], object)
     }
 }
@@ -26,7 +25,7 @@ private struct PerceptibleKey<T: Observable>: EnvironmentKey {
     static var defaultValue: T? { nil }
 }
 
-extension EnvironmentValues {
+public extension EnvironmentValues {
     fileprivate subscript<T: Observable>(_: KeyPath<T, T>) -> T? {
         get { self[PerceptibleKey<T>.self] }
         set { self[PerceptibleKey<T>.self] = newValue }
@@ -47,7 +46,7 @@ extension EnvironmentValues {
         set { self[\T.self] = newValue }
     }
 }
-extension Task {
+public extension Task {
     func whenAll<T>(tasks: [Task<T, Error>]) async throws -> [T] {
         try await withThrowingTaskGroup(of: [T].self, body: { group in
             for task in tasks {
