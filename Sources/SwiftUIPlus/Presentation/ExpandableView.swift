@@ -13,12 +13,12 @@ public struct ExpandableView: View {
     var expandedViewCornerRadius: CGFloat = 20
 
     public init(
-        @ViewBuilder thumbnail: () -> ThumbnailView,
-        @ViewBuilder expanded: () -> ExpandedView,
+        @ViewBuilder thumbnail: () -> some View,
+        @ViewBuilder expanded: () -> some View,
         @ViewBuilder background: @escaping () -> some SwiftUI.View = { EmptyView().background(.regularMaterial.blendMode(.exclusion)) }
     ) {
-        self.thumbnail = thumbnail()
-        self.expanded = expanded()
+        self.thumbnail = ThumbnailView(content: thumbnail)
+        self.expanded = ExpandedView(content: expanded)
         self.background = background
     }
 
