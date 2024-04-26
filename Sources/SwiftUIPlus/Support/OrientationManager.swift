@@ -27,7 +27,7 @@ public struct OrientationKey: EnvironmentKey {
     public static var defaultValue: OrientationManager = OrientationManager()
 }
 
-extension UIDeviceOrientation {
+public extension UIDeviceOrientation {
     var notchSide: Edge.Set {
         switch self {
         case .landscapeLeft:
@@ -42,7 +42,7 @@ extension UIDeviceOrientation {
 
 public
 final class OrientationManager: Observable {
-    var type: UIDeviceOrientation = .unknown
+    public var type: UIDeviceOrientation = .unknown
     
     private var cancellables: Set<AnyCancellable> = []
     

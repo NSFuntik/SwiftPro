@@ -1,7 +1,7 @@
 
 import SwiftUI
 
-struct AsyncButton<Label: View, Trigger: Equatable>: View {
+public struct AsyncButton<Label: View, Trigger: Equatable>: View {
     var cancellation: Trigger?
     let action: () async -> Void
     let label: Label
@@ -19,7 +19,7 @@ struct AsyncButton<Label: View, Trigger: Equatable>: View {
         self.label = label()
     }
     
-    var body: some View {
+    public var body: some View {
         Button {
             isRunning = true
             task = Task {
@@ -36,7 +36,7 @@ struct AsyncButton<Label: View, Trigger: Equatable>: View {
     }
 }
 
-extension AsyncButton where Trigger == Never {
+public extension AsyncButton where Trigger == Never {
     init(
         action: @escaping () async -> Void,
         @ViewBuilder label: () -> Label

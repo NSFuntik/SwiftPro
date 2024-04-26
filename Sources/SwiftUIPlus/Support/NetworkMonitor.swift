@@ -6,15 +6,10 @@
 //
 
 import Network
-import SwiftUI
-
-// extension Logger {
-//    static var global: SwiftUILogger = SwiftUILogger(subsystem: "dev.flomniSDK", category: "Global")
-//
-// }
+import Combine
 
 // An enum to handle the network status
-enum NetworkStatus: String {
+public enum NetworkStatus: String {
     case connected
     case disconnected
 }

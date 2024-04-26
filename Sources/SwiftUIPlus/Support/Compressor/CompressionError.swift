@@ -29,7 +29,7 @@ public enum CompressionError: Error {
     case processError
     case compressionFailed(_ desctiption: String = "Compression failed")
 
-    var localizedDescription: String {
+    public var localizedDescription: String {
         return switch self {
         case .emptyData: "The error received when trying to compress/decompress empty data (when length equals zero)."
         case .initError: "The error received when `compression_stream_init` failed. It also fails when trying to decompress `Data` compressed with different compression algorithm or uncompressed raw data."

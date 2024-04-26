@@ -74,7 +74,7 @@ public struct TextFieldClearButton: ViewModifier {
                         .symbolRenderingMode(.hierarchical)
                         .imageScale(.large)
                         .padding(6)
-                        .opacity(fieldText.isEmpty ? 0.01 : 1)
+                        .opacity(fieldText.isEmpty ? 0.11 : 1)
                 }
             }
     }
