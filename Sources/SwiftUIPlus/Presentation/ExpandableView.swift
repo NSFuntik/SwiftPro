@@ -12,7 +12,7 @@ public struct ExpandableView<S: View>: View {
     var thumbnailViewCornerRadius: CGFloat = 20
     var expandedViewCornerRadius: CGFloat = 20
 
-    init(
+    public init(
         @ViewBuilder thumbnail: () -> ThumbnailView,
         @ViewBuilder expanded: () -> ExpandedView,
         @ViewBuilder background: @escaping () -> S = { EmptyView().background(.regularMaterial.blendMode(.exclusion)) }
