@@ -1,13 +1,13 @@
 import SwiftUI
 
-public struct ExpandableView<S: View>: View {
+public struct ExpandableView: View {
     @Namespace private var namespace
     @State private var show = false
 
     var thumbnail: ThumbnailView
     var expanded: ExpandedView
 
-    var background: S
+    @ViewBuilder var background: (() -> any View)
 
     var thumbnailViewCornerRadius: CGFloat = 20
     var expandedViewCornerRadius: CGFloat = 20
@@ -15,11 +15,11 @@ public struct ExpandableView<S: View>: View {
     public init(
         @ViewBuilder thumbnail: () -> ThumbnailView,
         @ViewBuilder expanded: () -> ExpandedView,
-        @ViewBuilder background: @escaping () -> S = { EmptyView().background(.regularMaterial.blendMode(.exclusion)) }
+        @ViewBuilder background: @escaping () -> some SwiftUI.View = { EmptyView().background(.regularMaterial.blendMode(.exclusion)) }
     ) {
         self.thumbnail = thumbnail()
         self.expanded = expanded()
-        self.background = background()
+        self.background = background
     }
 
     public var body: some View {
@@ -54,7 +54,7 @@ public struct ExpandableView<S: View>: View {
         }
 
         .background(
-            background.blendMode(.exclusion)).matchedGeometryEffect(id: "background", in: namespace)
+            background().blendMode(.exclusion)).matchedGeometryEffect(id: "background", in: namespace)
 
         .mask(
             RoundedRectangle(cornerRadius: thumbnailViewCornerRadius, style: .continuous)
@@ -68,7 +68,7 @@ public struct ExpandableView<S: View>: View {
             expanded
                 .matchedGeometryEffect(id: "view", in: namespace)
                 .background(
-                    background.blendMode(.exclusion).opacity(0.8)).matchedGeometryEffect(id: "background", in: namespace)
+                    background().blendMode(.exclusion).opacity(0.8)).matchedGeometryEffect(id: "background", in: namespace)
 
                 .mask(
                     RoundedRectangle(cornerRadius: expandedViewCornerRadius, style: .continuous)
@@ -88,40 +88,27 @@ public struct ExpandableView<S: View>: View {
             .matchedGeometryEffect(id: "mask", in: namespace)
         }
     }
-}
-
-public struct ThumbnailView: View, Identifiable {
-    public var id = UUID()
-    @ViewBuilder var content: any View
-    public init(
-        id: UUID = UUID(),
-        @ViewBuilder content: () -> any View
-    ) {
-        self.id = id
-        self.content = content()
+    
+    public struct ThumbnailView: View, Identifiable {
+        public var id = UUID()
+        @ViewBuilder var content: any View
+     
+        public var body: some View {
+            ZStack {
+                AnyView(content)
+            }
+        }
     }
-
-    public var body: some View {
-        ZStack {
-            AnyView(content)
+    
+    public struct ExpandedView: View {
+        public var id = UUID()
+        @ViewBuilder var content: any View
+       
+        public var body: some View {
+            ZStack {
+                AnyView(content)
+            }
         }
     }
 }
 
-public struct ExpandedView: View {
-    public var id = UUID()
-    @ViewBuilder var content: any View
-    public init(
-        id: UUID = UUID(),
-        @ViewBuilder content: () -> any View
-    ) {
-        self.id = id
-        self.content = content()
-    }
-
-    public var body: some View {
-        ZStack {
-            AnyView(content)
-        }
-    }
-}
