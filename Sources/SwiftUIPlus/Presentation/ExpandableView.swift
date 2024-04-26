@@ -93,6 +93,13 @@ public struct ExpandableView<S: View>: View {
 public struct ThumbnailView: View, Identifiable {
     public var id = UUID()
     @ViewBuilder var content: any View
+    public init(
+        id: UUID = UUID(),
+        @ViewBuilder content: () -> any View
+    ) {
+        self.id = id
+        self.content = content()
+    }
 
     public var body: some View {
         ZStack {
@@ -104,6 +111,13 @@ public struct ThumbnailView: View, Identifiable {
 public struct ExpandedView: View {
     public var id = UUID()
     @ViewBuilder var content: any View
+    public init(
+        id: UUID = UUID(),
+        @ViewBuilder content: () -> any View
+    ) {
+        self.id = id
+        self.content = content()
+    }
 
     public var body: some View {
         ZStack {

@@ -7,12 +7,12 @@
 
 import Foundation
 
-extension Collection {
+public extension Collection {
     subscript(safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
     }
 }
-extension StaticString {
+public extension StaticString {
     var lastPathComponent: String {
         guard let url = URL(string: self.description) else { return self.description }
         return url.lastPathComponent
