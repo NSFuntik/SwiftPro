@@ -20,7 +20,7 @@ public struct Shimmer: ViewModifier {
     ///   - gradient: A custom gradient. Defaults to ``Shimmer/defaultGradient``.
     ///   - bandSize: The size of the animated mask's "band". Defaults to 0.3 unit points, which corresponds to
     /// 30% of the extent of the gradient.
-    package init(
+    public init(
         animation: Animation = Self.defaultAnimation,
         gradient: Gradient = Self.defaultGradient,
         bandSize: CGFloat = 0.3

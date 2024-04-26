@@ -46,7 +46,7 @@ final class OrientationManager: Observable {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    init() {
+    public init() {
         guard let scene = UIApplication.shared.connectedScenes.first,
               let sceneDelegate = scene as? UIWindowScene else { return }
         
