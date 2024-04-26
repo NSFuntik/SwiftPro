@@ -90,22 +90,22 @@ public struct ExpandableView<S: View>: View {
     }
 }
 
-struct ThumbnailView: View, Identifiable {
-    var id = UUID()
+public struct ThumbnailView: View, Identifiable {
+    public var id = UUID()
     @ViewBuilder var content: any View
 
-    var body: some View {
+    public var body: some View {
         ZStack {
             AnyView(content)
         }
     }
 }
 
-struct ExpandedView: View {
-    var id = UUID()
+public struct ExpandedView: View {
+    public var id = UUID()
     @ViewBuilder var content: any View
 
-    var body: some View {
+    public var body: some View {
         ZStack {
             AnyView(content)
         }
