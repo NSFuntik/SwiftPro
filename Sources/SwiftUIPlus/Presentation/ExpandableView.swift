@@ -54,7 +54,7 @@ public struct ExpandableView: View {
         }
 
         .background(
-            background().blendMode(.exclusion)).matchedGeometryEffect(id: "background", in: namespace)
+            background().matchedGeometryEffect(id: "background", in: namespace))
 
         .mask(
             RoundedRectangle(cornerRadius: thumbnailViewCornerRadius, style: .continuous)
@@ -68,7 +68,7 @@ public struct ExpandableView: View {
             expanded
                 .matchedGeometryEffect(id: "view", in: namespace)
                 .background(
-                    background().blendMode(.exclusion).opacity(0.8)).matchedGeometryEffect(id: "background", in: namespace)
+                    background().opacity(0.8).matchedGeometryEffect(id: "background", in: namespace))
 
                 .mask(
                     RoundedRectangle(cornerRadius: expandedViewCornerRadius, style: .continuous)
