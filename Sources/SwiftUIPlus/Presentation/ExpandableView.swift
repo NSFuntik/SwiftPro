@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct ExpandableView<S: ShapeStyle>: View {
+public struct ExpandableView<S: View>: View {
     @Namespace private var namespace
     @State private var show = false
 
@@ -15,7 +15,7 @@ public struct ExpandableView<S: ShapeStyle>: View {
     init(
         @ViewBuilder thumbnail: () -> ThumbnailView,
         @ViewBuilder expanded: () -> ExpandedView,
-        @ViewBuilder background: @escaping () -> S = { .regularMaterial.blendMode(.exclusion) }
+        @ViewBuilder background: @escaping () -> S = { EmptyView().background(.regularMaterial.blendMode(.exclusion)) }
     ) {
         self.thumbnail = thumbnail()
         self.expanded = expanded()
