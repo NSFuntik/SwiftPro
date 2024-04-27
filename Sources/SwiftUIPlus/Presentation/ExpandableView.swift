@@ -1,18 +1,25 @@
 import SwiftUI
-struct DroppableView: View {
+public struct DroppableView: View {
     @Namespace private var namespace
     @State private var show = false
-    
+
     var thumbnail: Thumbnail
     var expanded: Expanded
-    
+
     var thumbnailViewBackgroundColor: Color = .gray.opacity(0.8)
     var expandedViewBackgroundColor: Color = .gray
-    
+
     var thumbnailViewCornerRadius: CGFloat = 6
     var expandedViewCornerRadius: CGFloat = 6
-    
-    var body: some View {
+    public init(thumbnail: Thumbnail, expanded: Expanded, thumbnailViewBackgroundColor: Color = Color(.tertiarySystemGroupedBackground), expandedViewBackgroundColor: Color  = Color(.systemGroupedBackground), thumbnailViewCornerRadius: CGFloat = 6, expandedViewCornerRadius: CGFloat = 6) {
+        self.thumbnail = thumbnail
+        self.expanded = expanded
+        self.thumbnailViewBackgroundColor = thumbnailViewBackgroundColor
+        self.expandedViewBackgroundColor = expandedViewBackgroundColor
+        self.thumbnailViewCornerRadius = thumbnailViewCornerRadius
+        self.expandedViewCornerRadius = expandedViewCornerRadius
+    }
+    public var body: some View {
         ZStack {
             if !show {
                 thumbnailView()
@@ -28,7 +35,7 @@ struct DroppableView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func thumbnailView() -> some View {
         ZStack {
@@ -43,7 +50,7 @@ struct DroppableView: View {
                 .matchedGeometryEffect(id: "mask", in: namespace)
         )
     }
-    
+
     @ViewBuilder
     private func expandedView() -> some View {
         ZStack {
@@ -57,7 +64,7 @@ struct DroppableView: View {
                     RoundedRectangle(cornerRadius: expandedViewCornerRadius, style: .continuous)
                         .matchedGeometryEffect(id: "mask", in: namespace)
                 )
-            
+
             Button {
                 withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
                     show.toggle()
@@ -71,26 +78,26 @@ struct DroppableView: View {
             .matchedGeometryEffect(id: "mask", in: namespace)
         }
     }
-}
 
-struct Thumbnail: View, Identifiable {
-    var id = UUID()
-    @ViewBuilder var content: any View
-    
-    var body: some View {
-        ZStack {
-            AnyView(content)
+    public struct Thumbnail: View, Identifiable {
+        public var id = UUID()
+        @ViewBuilder public var content: any View
+
+        public var body: some View {
+            ZStack {
+                AnyView(content)
+            }
         }
     }
-}
 
-struct Expanded: View, Identifiable {
-    var id = UUID()
-    @ViewBuilder var content: any View
-    
-    var body: some View {
-        ZStack {
-            AnyView(content)
+    public struct Expanded: View, Identifiable {
+        public var id = UUID()
+        @ViewBuilder public var content: any View
+
+        public var body: some View {
+            ZStack {
+                AnyView(content)
+            }
         }
     }
 }
