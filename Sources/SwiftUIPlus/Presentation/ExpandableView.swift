@@ -11,7 +11,7 @@ public struct DroppableView: View {
 
     var thumbnailViewCornerRadius: CGFloat = 6
     var expandedViewCornerRadius: CGFloat = 6
-    public init(thumbnail: Thumbnail, expanded: Expanded, thumbnailViewBackgroundColor: Color = Color(.tertiarySystemGroupedBackground), expandedViewBackgroundColor: Color  = Color(.systemGroupedBackground), thumbnailViewCornerRadius: CGFloat = 6, expandedViewCornerRadius: CGFloat = 6) {
+    public init(thumbnail: Thumbnail, expanded: Expanded, thumbnailViewBackgroundColor: Color = Color(.tertiarySystemGroupedBackground), expandedViewBackgroundColor: Color = Color(.systemGroupedBackground), thumbnailViewCornerRadius: CGFloat = 6, expandedViewCornerRadius: CGFloat = 6) {
         self.thumbnail = thumbnail
         self.expanded = expanded
         self.thumbnailViewBackgroundColor = thumbnailViewBackgroundColor
@@ -19,6 +19,7 @@ public struct DroppableView: View {
         self.thumbnailViewCornerRadius = thumbnailViewCornerRadius
         self.expandedViewCornerRadius = expandedViewCornerRadius
     }
+
     public var body: some View {
         ZStack {
             if !show {
@@ -82,7 +83,12 @@ public struct DroppableView: View {
     public struct Thumbnail: View, Identifiable {
         public var id = UUID()
         @ViewBuilder public var content: any View
-
+        public init(id: UUID = UUID(),
+                    @ViewBuilder content: () -> any View
+        ) {
+            self.id = id
+            self.content = content()
+        }
         public var body: some View {
             ZStack {
                 AnyView(content)
@@ -93,6 +99,12 @@ public struct DroppableView: View {
     public struct Expanded: View, Identifiable {
         public var id = UUID()
         @ViewBuilder public var content: any View
+        public init(id: UUID = UUID(),
+             @ViewBuilder content: () -> any View
+        ) {
+            self.id = id
+            self.content = content()
+        }
 
         public var body: some View {
             ZStack {
