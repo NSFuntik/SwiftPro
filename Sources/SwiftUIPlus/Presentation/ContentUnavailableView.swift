@@ -18,7 +18,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
     @Environment(\.refresh) var refresh
     @Environment(\.dismiss) var dismiss
 
-    init(
+    public init(
         _ title: String,
         message: String,
         image: Image,
@@ -32,7 +32,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         self.action = action
     }
 
-    init(
+    public init(
         _ title: String,
         image: Image,
         action: (() -> Void)? = nil,
@@ -45,7 +45,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         self.action = action
     }
 
-    init(
+    public init(
         _ title: String,
         symbol: String,
         action: (() -> Void)? = nil,
@@ -58,7 +58,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         self.action = action
     }
 
-    init(
+    public init(
         _ title: String,
         symbol: SFSymbol,
         description: String,
