@@ -176,36 +176,6 @@ import SwiftUIBackports
         }
     }
 
-    extension View {
-        @ViewBuilder
-        func highlightEffect() -> some View {
-            if #available(iOS 15, *) {
-                contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 13, style: .continuous).inset(by: -20))
-                    .hoverEffect(.highlight)
-            } else {
-                hoverEffect(.highlight)
-            }
-        }
-
-        @ViewBuilder
-        func ignoreKeyboard() -> some View {
-            if #available(iOS 14, *) {
-                ignoresSafeArea(.keyboard, edges: .all)
-            } else {
-                self
-            }
-        }
-
-        @ViewBuilder
-        func vibrantForeground(thick: Bool = false) -> some View {
-            if #available(iOS 15, *) {
-                foregroundStyle(thick ? .ultraThickMaterial : .bar)
-            } else {
-                foregroundColor(Color(.systemBackground))
-            }
-        }
-    }
-
     private struct Representable: UIViewControllerRepresentable {
         let host: WebView
 
@@ -265,3 +235,32 @@ import SwiftUIBackports
     }
 
 #endif
+public extension View {
+    @ViewBuilder
+    func highlightEffect() -> some View {
+        if #available(iOS 15, *) {
+            contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 13, style: .continuous).inset(by: -20))
+                .hoverEffect(.highlight)
+        } else {
+            hoverEffect(.highlight)
+        }
+    }
+
+    @ViewBuilder
+    func ignoreKeyboard() -> some View {
+        if #available(iOS 14, *) {
+            ignoresSafeArea(.keyboard, edges: .all)
+        } else {
+            self
+        }
+    }
+
+    @ViewBuilder
+    func vibrantForeground(thick: Bool = false) -> some View {
+        if #available(iOS 15, *) {
+            foregroundStyle(thick ? .ultraThickMaterial : .bar)
+        } else {
+            foregroundColor(Color(.systemBackground))
+        }
+    }
+}

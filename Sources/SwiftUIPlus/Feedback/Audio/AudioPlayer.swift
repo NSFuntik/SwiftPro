@@ -27,7 +27,12 @@ public final class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegat
         try await MainActor.run {
             player = try AVAudioPlayer(contentsOf: audio.url)
             player?.delegate = self
-            player?.play()
+            player?.prepareToPlay()
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.player?.play()
+            }
+            
         }
         await stop()
     }

@@ -19,6 +19,18 @@ public struct AsyncButton<Label: View, Trigger: Equatable>: View {
         self.label = label()
     }
     
+    init(
+        cancellation: Trigger = false,
+        action: Void,
+        @ViewBuilder label: () -> Label
+    ) {
+        self.cancellation = cancellation
+        self.action = { action }
+        self.label = label()
+    }
+    
+  
+    
     public var body: some View {
         Button {
             isRunning = true
