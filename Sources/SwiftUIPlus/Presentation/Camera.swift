@@ -89,15 +89,15 @@ public struct CameraView: View {
         .ignoresSafeArea()
         .statusBar(hidden: true)
         .task {
-#if DEBUG && (targetEnvironment(simulator) || targetEnvironment(macCatalyst) || SWIFT_PACKAGE)
-            if #available(iOS 15.4, *) {
-                viewfinderImage = Image(symbol: .pc).symbolRenderingMode(.multicolor).resizable(resizingMode: .tile).interpolation(.high).renderingMode(.original)
-            } else {
-                viewfinderImage = Image(systemName: "video.slash").resizable(resizingMode: .stretch)
-            }
-#else
+//#if (targetEnvironment(simulator) || targetEnvironment(macCatalyst) || SWIFT_PACKAGE)
+//            if #available(iOS 15.4, *) {
+//                viewfinderImage = Image(symbol: .pc).symbolRenderingMode(.multicolor).resizable(resizingMode: .tile).interpolation(.high).renderingMode(.original)
+//            } else {
+//                viewfinderImage = Image(systemName: "video.slash").resizable(resizingMode: .stretch)
+//            }
+//#else
             await handleCameraPreviews()
-#endif
+//#endif
         }
     }
     
