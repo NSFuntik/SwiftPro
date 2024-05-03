@@ -19,7 +19,6 @@ public struct PositionObservingView<Content: View>: View {
 
     public var body: some View {
         content
-            .clipped()
             .background(GeometryReader { geometry in
                 Color.clear.preference(
                     key: PreferenceKey.self,
@@ -76,7 +75,7 @@ public struct OffsetObservingScrollView<Content: View>: View {
                         )
                     }
                 ),
-                content: content
+                content: { content }
             )
         }
         .coordinateSpace(name: coordinateSpaceName)
