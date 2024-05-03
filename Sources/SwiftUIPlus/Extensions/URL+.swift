@@ -12,7 +12,26 @@ public extension URLComponents {
         queryItems = parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
     }
 }
-
+extension URLRequest {
+    
+    /// A computed property to get and set the query items on the URL request.
+    var queryItems: [URLQueryItem]? {
+        get {
+            guard let url = url else { return nil }
+            guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else { return nil }
+            return components.queryItems
+        }
+        set {
+            guard let url = self.url else { return }
+            var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+            components?.queryItems = newValue
+            
+            // Update the URL of the URLRequest if new query items are set
+            guard let url = components?.url else { return }
+            self.url = url
+        }
+    }
+}
 public extension URL {
     mutating func appending(query: [URLQueryItem]) -> URL {
         guard var components: URLComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
