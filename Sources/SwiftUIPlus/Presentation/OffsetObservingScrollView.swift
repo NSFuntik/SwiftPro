@@ -5,7 +5,7 @@ import SwiftUI
 public struct PositionObservingView<Content: View>: View {
     var coordinateSpace: CoordinateSpace
     @Binding var position: CGPoint
-    @ViewBuilder var content: () -> Content
+    var content: Content
 
     public init(
         coordinateSpace: CoordinateSpace,
@@ -14,11 +14,12 @@ public struct PositionObservingView<Content: View>: View {
     ) {
         self.coordinateSpace = coordinateSpace
         self._position = position
-        self.content = content
+        self.content = content()
     }
 
     public var body: some View {
-        content()
+        content
+            .clipped()
             .background(GeometryReader { geometry in
                 Color.clear.preference(
                     key: PreferenceKey.self,
@@ -36,7 +37,7 @@ private extension PositionObservingView {
         static var defaultValue: CGPoint { .zero }
 
         static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {
-            // No-op
+            debugPrint("reduce(value: \(String(describing: reduce)), nextValue: \(nextValue())")
         }
     }
 }
@@ -47,7 +48,7 @@ public struct OffsetObservingScrollView<Content: View>: View {
     var axes: Axis.Set = [.vertical]
     var showsIndicators = true
     @Binding var offset: CGPoint
-    @ViewBuilder var content: () -> Content
+    var content: Content
 
     private let coordinateSpaceName = UUID()
     public init(
@@ -59,7 +60,7 @@ public struct OffsetObservingScrollView<Content: View>: View {
         self.axes = axes
         self.showsIndicators = showsIndicators
         self._offset = offset
-        self.content = content
+        self.content = content()
     }
 
     public var body: some View {
