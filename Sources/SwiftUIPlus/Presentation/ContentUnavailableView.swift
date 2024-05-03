@@ -116,10 +116,10 @@ struct ContentUnavailablePreview: View {
                 } else {
                     // Show search results or empty view
                     if searchResults.isEmpty {
-                        ContentUnavailableView("No Results", message: "Try a different search term", image: Image(systemName: "magnifyingglass")) {
+                        ContentUnavailableView("No Results", message: "Try a different search term", image: Image(systemName: "magnifyingglass"), content:  {
                             // Add any additional content or actions here
                             EmptyView()
-                        }
+                        })
                     } else {
                         // Show search results
                     }

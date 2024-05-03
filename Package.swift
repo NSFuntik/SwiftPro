@@ -32,12 +32,7 @@ let package = Package(
                 .product(name: "SFSymbolEnum", package: "SFSymbolEnum")
             ],
             resources: [
-                .embedInCode("Resources/bg.jpg"),
-                .process("Resources/Media.xcassets"),
-                .process("Resources/bg.jpg"),
-
-                
-                //                .process("Resources/Permissions.plist")
+              
             ])
     ]
 )

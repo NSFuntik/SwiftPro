@@ -53,12 +53,12 @@ public struct OffsetObservingScrollView<Content: View>: View {
     public init(
         axes: Axis.Set,
         showsIndicators: Bool = true,
-        offset: CGPoint,
+        offset: Binding<CGPoint>,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.axes = axes
         self.showsIndicators = showsIndicators
-        self.offset = offset
+        self._offset = offset
         self.content = content
     }
 
@@ -126,7 +126,7 @@ public struct OffsetObservingScrollView<Content: View>: View {
 
         var body: some View {
             GeometryReader { geometry in
-                OffsetObservingScrollView(offset: $scrollOffset) {
+                OffsetObservingScrollView(axes: .vertical, offset: $scrollOffset) {
                     VStack(spacing: 0) {
                         makeHeaderText(collapsed: false)
                         content()
