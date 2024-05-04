@@ -24,7 +24,7 @@ public extension EnvironmentValues {
 }
 
 public struct OrientationKey: EnvironmentKey {
-    public static var defaultValue: OrientationManager = OrientationManager()
+    public static var defaultValue: OrientationManager = OrientationManager.shared
 }
 
 public extension UIDeviceOrientation {
@@ -45,8 +45,8 @@ final class OrientationManager: Observable {
     public var type: UIDeviceOrientation = .unknown
     
     private var cancellables: Set<AnyCancellable> = []
-    
-    public init() {
+    public static let shared = OrientationManager()
+    private init() {
         guard let scene = UIApplication.shared.connectedScenes.first,
               let sceneDelegate = scene as? UIWindowScene else { return }
         
