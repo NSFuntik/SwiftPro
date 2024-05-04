@@ -60,7 +60,7 @@ final class OrientationManager: Observable {
             
         default: type = .unknown
         }
-        
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         NotificationCenter.default
             .publisher(for: UIDevice.orientationDidChangeNotification)
             .sink { _ in

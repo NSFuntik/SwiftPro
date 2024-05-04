@@ -30,6 +30,24 @@ public extension View {
         })
     }
 }
+class CameraUtility {
+    /// Checks if the device has a camera available.
+    static func isCameraAvailable() -> Bool {
+        return UIImagePickerController.isSourceTypeAvailable(.camera) && hasCameraPermission()
+    }
+    
+    /// Checks camera authorization status.
+    static func hasCameraPermission() -> Bool {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized: // The user has previously granted access to the camera.
+            return true
+        case .notDetermined, .denied, .restricted: // The user has not granted access or cannot grant access due to restrictions.
+            return false
+        @unknown default:
+            return false
+        }
+    }
+}
 
 @frozen
 public struct CameraView: View {
@@ -41,7 +59,8 @@ public struct CameraView: View {
     @State private var authorizationStatus: AVAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
     @State private var outputSize: CGSize = .zero
     
-    private var options: CameraViewOptions = CameraViewOptions()
+    
+    private let options: CameraViewOptions = CameraViewOptions()
     private let barHeightFactor = 0.15
     public init(_ outputImage: Binding<UIImage?>) {
         _outputImage = outputImage
@@ -53,8 +72,6 @@ public struct CameraView: View {
     public var body: some View {
         GeometryReader { geometry in
             ViewfinderView(image: $viewfinderImage)
-            //                           showsTakePictureFeedback: $showsTakePictureFeedback)
-            
                 .overlay(alignment: .bottom) {
                     buttonsView()
                         .frame(height: geometry.size.height * self.barHeightFactor)
@@ -86,19 +103,19 @@ public struct CameraView: View {
             }
             
         }).preferredColorScheme(.dark)
-        .ignoresSafeArea()
-        .statusBar(hidden: true)
-        .task {
-//#if (targetEnvironment(simulator) || targetEnvironment(macCatalyst) || SWIFT_PACKAGE)
-//            if #available(iOS 15.4, *) {
-//                viewfinderImage = Image(symbol: .pc).symbolRenderingMode(.multicolor).resizable(resizingMode: .tile).interpolation(.high).renderingMode(.original)
-//            } else {
-//                viewfinderImage = Image(systemName: "video.slash").resizable(resizingMode: .stretch)
-//            }
-//#else
-            await handleCameraPreviews()
-//#endif
-        }
+            .ignoresSafeArea()
+            .statusBar(hidden: true)
+            .task {
+                //#if (targetEnvironment(simulator) || targetEnvironment(macCatalyst) || SWIFT_PACKAGE)
+                //            if #available(iOS 15.4, *) {
+                //                viewfinderImage = Image(symbol: .pc).symbolRenderingMode(.multicolor).resizable(resizingMode: .tile).interpolation(.high).renderingMode(.original)
+                //            } else {
+                //                viewfinderImage = Image(systemName: "video.slash").resizable(resizingMode: .stretch)
+                //            }
+                //#else
+                await handleCameraPreviews()
+                //#endif
+            }
     }
     
     @ViewBuilder
@@ -127,7 +144,7 @@ public struct CameraView: View {
                         Text("Send Photo")
                     } icon: {
                         Image(symbol: .paperplaneCircleFill)
-                            .symbolRenderingMode(.palette)
+                            .symbolRenderingMode(.multicolor)
                             .imageScale(.large)
                             .rotationEffect(.degrees(45), anchor: .center)
                     }
@@ -160,7 +177,7 @@ public struct CameraView: View {
                         Image(symbol: .circleInsetFilled)
                             .symbolRenderingMode(.palette)
                             .foregroundStyle(.secondary, .primary.opacity(0.88))
-
+                        
                     }
                     .labelStyle(.cameraControl(tint: .background.opacity(0.44), size: 18))
                 }
@@ -201,6 +218,14 @@ public struct CameraView: View {
     }
     
     func handleCameraPreviews() async {
+        guard CameraUtility.isCameraAvailable() else {
+            viewfinderImage = Image(symbol: .pc)
+                .symbolRenderingMode(.multicolor)
+                .resizable(resizingMode: .stretch)
+                .interpolation(.high)
+                .renderingMode(.original)
+            return
+        }
         await camera.start()
         
         let imageStream = camera.previewStream
