@@ -30,6 +30,7 @@ public extension View {
         })
     }
 }
+
 class CameraUtility {
     /// Checks if the device has a camera available.
     static func isCameraAvailable() -> Bool {
@@ -59,7 +60,6 @@ public struct CameraView: View {
     @State private var authorizationStatus: AVAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
     @State private var outputSize: CGSize = .zero
     
-    
     private let options: CameraViewOptions = CameraViewOptions()
     private let barHeightFactor = 0.15
     public init(_ outputImage: Binding<UIImage?>) {
@@ -84,17 +84,7 @@ public struct CameraView: View {
             
             guard let capturedPhoto = try? await camera.takePhoto(),
                   let image = UIImage(photo: capturedPhoto)
-                    
             else { return }
-            //            if image.getSizeIn(.megabyte) > 4.9 {
-            //                Log.global.error("Image is too large \(image.getSizeIn(.megabyte))")
-            //                guard let compressedImage = try? image.compress()
-            //                else {
-            //                    Log.global.error("Can't compress image")
-            //                    return
-            //                }
-            //                image = compressedImage
-            //            }
             capturedImage = image
             if let capturedImage {
                 withAnimation {
@@ -102,20 +92,21 @@ public struct CameraView: View {
                 }
             }
             
-        }).preferredColorScheme(.dark)
-            .ignoresSafeArea()
-            .statusBar(hidden: true)
-            .task {
-                //#if (targetEnvironment(simulator) || targetEnvironment(macCatalyst) || SWIFT_PACKAGE)
-                //            if #available(iOS 15.4, *) {
-                //                viewfinderImage = Image(symbol: .pc).symbolRenderingMode(.multicolor).resizable(resizingMode: .tile).interpolation(.high).renderingMode(.original)
-                //            } else {
-                //                viewfinderImage = Image(systemName: "video.slash").resizable(resizingMode: .stretch)
-                //            }
-                //#else
-                await handleCameraPreviews()
-                //#endif
-            }
+        })
+        .preferredColorScheme(.dark)
+        .ignoresSafeArea()
+        .statusBar(hidden: true)
+        .task {
+            // #if (targetEnvironment(simulator) || targetEnvironment(macCatalyst) || SWIFT_PACKAGE)
+            //            if #available(iOS 15.4, *) {
+            //                viewfinderImage = Image(symbol: .pc).symbolRenderingMode(.multicolor).resizable(resizingMode: .tile).interpolation(.high).renderingMode(.original)
+            //            } else {
+            //                viewfinderImage = Image(systemName: "video.slash").resizable(resizingMode: .stretch)
+            //            }
+            // #else
+            await handleCameraPreviews()
+            // #endif
+        }
     }
     
     @ViewBuilder
@@ -177,7 +168,6 @@ public struct CameraView: View {
                         Image(symbol: .circleInsetFilled)
                             .symbolRenderingMode(.palette)
                             .foregroundStyle(.secondary, .primary.opacity(0.88))
-                        
                     }
                     .labelStyle(.cameraControl(tint: .background.opacity(0.44), size: 18))
                 }
@@ -203,22 +193,14 @@ public struct CameraView: View {
                 .labelStyle(.cameraControl(tint: .bar, size: 14.88))
             }
         }
-        //        HStack(spacing: 60) {
-        //            Spacer()
-        //
-        //
-        //
-        //            Spacer()
-        //        }
-        //        .foregroundStyle(.white.opacity(0.66))
         .buttonStyle(.plain)
-        //        .labelStyle(.iconOnly)
         .padding()
         .animation(.bouncy, value: capturedImage)
     }
     
     func handleCameraPreviews() async {
         guard CameraUtility.isCameraAvailable() else {
+            debugPrint("Camera is not available.")
             viewfinderImage = Image(symbol: .pc)
                 .symbolRenderingMode(.multicolor)
                 .resizable(resizingMode: .stretch)
@@ -272,7 +254,6 @@ extension LabelStyle where Self == CameraContolLabelStyle<Material> {
 }
 
 struct CameraContolLabelStyle<S>: LabelStyle where S: ShapeStyle {
-    
     var tint: S
     var size: CGFloat
     @ScaledMetric(relativeTo: .title) private var iconWidth = 3.14
