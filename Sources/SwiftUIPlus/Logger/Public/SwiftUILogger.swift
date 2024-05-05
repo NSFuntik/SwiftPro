@@ -210,15 +210,17 @@ open class SwiftUILogger: ObservableObject {
 
         lock.lock()
         defer {
-//            let osLog = Logger(subsystem: Bundle.debugDescription(), category: file.description.appending(" \(line)"))
-//            switch level {
-//            case .debug, .success: osLog.debug("\(level.symbol) \(message)")
-//            case .trace: osLog.trace("\(level.symbol) \(message)")
-//            case .info: osLog.info("\(level.symbol) \(message)")
-//            case .warning: osLog.warning("\(level.symbol) \(message)")
-//            case .error: osLog.error("\(level.symbol) \(message)")
-//            case .fatal: osLog.fault("\(level.symbol) \(message)")
-//            }
+            #if DEBUG
+                let osLog = Logger(subsystem: Bundle.debugDescription(), category: file.description.appending(" \(line)"))
+                switch level {
+                case .debug, .success: osLog.debug("\(level.symbol) \(message)")
+                case .trace: osLog.trace("\(level.symbol) \(message)")
+                case .info: osLog.info("\(level.symbol) \(message)")
+                case .warning: osLog.warning("\(level.symbol) \(message)")
+                case .error: osLog.error("\(level.symbol) \(message)")
+                case .fatal: osLog.fault("\(level.symbol) \(message)")
+                }
+            #endif
             lock.unlock()
         }
         DispatchQueue.main.async {
