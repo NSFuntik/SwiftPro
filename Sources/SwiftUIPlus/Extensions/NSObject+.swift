@@ -8,6 +8,14 @@ import AdSupport
 import AppTrackingTransparency
 import UIKit
 
+public func runOnMainActor(
+    _ action: @escaping @MainActor () -> Void
+) {
+    Task { @MainActor in
+        action()
+    }
+}
+
 public extension UIView {
     func closestVC() -> UIViewController? {
         var responder: UIResponder? = self

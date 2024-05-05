@@ -6,12 +6,19 @@ public struct DroppableView: View {
     var thumbnail: Thumbnail
     var expanded: Expanded
 
-    var thumbnailViewBackgroundColor: Color = .gray.opacity(0.8)
-    var expandedViewBackgroundColor: Color = .gray
+    var thumbnailViewBackgroundColor: Color = Color(.tertiarySystemGroupedBackground).opacity(0.8)
+    var expandedViewBackgroundColor: Color = Color(.tertiarySystemGroupedBackground)
 
     var thumbnailViewCornerRadius: CGFloat = 6
     var expandedViewCornerRadius: CGFloat = 6
-    public init(thumbnail: Thumbnail, expanded: Expanded, thumbnailViewBackgroundColor: Color = Color(.tertiarySystemGroupedBackground), expandedViewBackgroundColor: Color = Color(.systemGroupedBackground), thumbnailViewCornerRadius: CGFloat = 6, expandedViewCornerRadius: CGFloat = 6) {
+    public init(
+        thumbnail: Thumbnail,
+        expanded: Expanded,
+        thumbnailViewBackgroundColor: Color = Color(.tertiarySystemGroupedBackground),
+        expandedViewBackgroundColor: Color = Color(.systemGroupedBackground),
+        thumbnailViewCornerRadius: CGFloat = 6,
+        expandedViewCornerRadius: CGFloat = 6
+    ) {
         self.thumbnail = thumbnail
         self.expanded = expanded
         self.thumbnailViewBackgroundColor = thumbnailViewBackgroundColor
@@ -21,20 +28,25 @@ public struct DroppableView: View {
     }
 
     public var body: some View {
-        ZStack {
-            if !show {
-                thumbnailView()
-            } else {
-                expandedView()
+        Button(action: {
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                show.toggle()
             }
-        }
-        .onTapGesture {
-            if !show {
-                withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                    show.toggle()
+        }, label: {
+            ZStack {
+                if !show {
+                    thumbnailView()
+                } else {
+                    expandedView()
                 }
             }
-        }
+        })
+//       
+//        .onTapGesture {
+//            if !show {
+//               
+//            }
+//        }
     }
 
     @ViewBuilder
@@ -72,7 +84,7 @@ public struct DroppableView: View {
                 }
             } label: {
                 Image(systemName: "xmark")
-                    .foregroundColor(.white)
+                    .foregroundColor(.clear)
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
