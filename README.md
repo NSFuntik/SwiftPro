@@ -2,7 +2,7 @@
 ![macOS](https://img.shields.io/badge/macOS-EE751F)
 ![tvOS](https://img.shields.io/badge/tvOS-00B9BB)
 ![ios](https://img.shields.io/badge/iOS-0C62C7)
-[![swift](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fshaps80%2FSwiftUIPlus%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/shaps80/SwiftUIPlus)
+[![swift](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fshaps80%2FSwiftPro%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/shaps80/SwiftPro)
 
 # SwiftUI Plus
 
@@ -78,4 +78,4 @@ You can install manually (by copying the files in the `Sources` directory) or us
 
 To install using Swift Package Manager, add this to the `dependencies` section of your `Package.swift` file:
 
-`.package(url: "https://github.com/shaps80/SwiftUIPlus.git", .upToNextMinor(from: "1.0.0"))`
+`.package(url: "https://github.com/shaps80/SwiftPro.git", .upToNextMinor(from: "1.0.0"))`

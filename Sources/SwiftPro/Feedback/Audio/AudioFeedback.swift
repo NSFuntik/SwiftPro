@@ -9,7 +9,7 @@ public extension AnyFeedback {
 }
 
 public struct AudioPlayerEnvironmentKey: EnvironmentKey {
-    public static var defaultValue: AudioPlayer = AudioPlayer.shared
+   @MainActor public static var defaultValue: AudioPlayer = AudioPlayer.shared
 }
 
 public extension EnvironmentValues {
@@ -24,7 +24,7 @@ public struct AudioFeedback: Feedback, ViewModifier {
 
     public func body(content: Content) -> some View {
         content
-            .environmentObject(player)
+            .environment(player)
     }
 
    @State var audio: Audio

@@ -4,14 +4,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "SwiftUIPlus",
+    name: "SwiftPro",
     platforms: [
         .iOS(.v15)
     ],
     products: [
         .library(
-            name: "SwiftUIPlus",
-            targets: ["SwiftUIPlus", ]
+            name: "SwiftPro",
+            targets: ["SwiftPro", ]
         ),
     ],
     dependencies: [
@@ -25,7 +25,7 @@ let package = Package(
     
     targets: [
         .target(
-            name: "SwiftUIPlus",
+            name: "SwiftPro",
             dependencies: [
                 "SwiftUIBackports",
                 .product(name: "OrderedCollections", package: "swift-collections"),

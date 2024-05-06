@@ -11,10 +11,10 @@ private enum PlayerError: LocalizedError {
     }
 }
 
-public final class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegate {
+public final class AudioPlayer: NSObject, Observable, AVAudioPlayerDelegate {
     private var player: AVAudioPlayer?
 
-    public static let shared = AudioPlayer()
+    @MainActor public static let shared = AudioPlayer()
 
     @MainActor
     public func play(audio: Audio) async throws {
@@ -28,11 +28,10 @@ public final class AudioPlayer: NSObject, ObservableObject, AVAudioPlayerDelegat
             player = try AVAudioPlayer(contentsOf: audio.url)
             player?.delegate = self
             player?.prepareToPlay()
-            
+
             DispatchQueue.main.async { [weak self] in
                 self?.player?.play()
             }
-            
         }
         await stop()
     }

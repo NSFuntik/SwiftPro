@@ -228,7 +228,7 @@ private extension KeychainWrapper {
         _ value: Data,
         forKey key: String
     ) -> Bool {
-        var keychainQueryDictionary: [String: Any] = setupKeychainQueryDictionary(forKey: key)
+        let keychainQueryDictionary: [String: Any] = setupKeychainQueryDictionary(forKey: key)
         let updateDictionary = [paramSecValueData: value]
 
         let status = SecItemUpdate(keychainQueryDictionary as CFDictionary, updateDictionary as CFDictionary)
