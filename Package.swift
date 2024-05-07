@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SwiftPro",
     platforms: [
-        .iOS(.v15)
+        .iOS(.v15), .macOS(.v13), .tvOS(.v15), .watchOS(.v8), .macCatalyst(.v13)
     ],
     products: [
         .library(
@@ -32,7 +32,7 @@ let package = Package(
                 .product(name: "SFSymbolEnum", package: "SFSymbolEnum")
             ],
             resources: [
-              
+                
             ])
     ]
 )

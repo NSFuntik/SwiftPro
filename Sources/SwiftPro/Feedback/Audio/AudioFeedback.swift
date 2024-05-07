@@ -1,3 +1,4 @@
+import Factory
 import SwiftUI
 
 public extension AnyFeedback {
@@ -8,26 +9,42 @@ public extension AnyFeedback {
     }
 }
 
-public struct AudioPlayerEnvironmentKey: EnvironmentKey {
-   @MainActor public static var defaultValue: AudioPlayer = AudioPlayer.shared
+public extension View {
+    /// Specifies feedback that plays an audio file
+    /// - Parameter audio: The audio to play when this feedback is triggered
+    func audio(_ audio: Audio) -> some View {
+        self.modifier(AudioFeedback(audio: audio))
+    }
 }
 
-public extension EnvironmentValues {
-    var audioPlayer: AudioPlayer {
-        get { self[AudioPlayerEnvironmentKey.self] }
-        set { self[AudioPlayerEnvironmentKey.self] = newValue }
+public extension Audio {
+    @MainActor
+    func play() async throws {
+        try await AudioPlayer.shared.play(audio: self)
+    }
+}
+
+public struct AudioPlayerEnvironmentKey: EnvironmentKey {
+    @MainActor public static let defaultValue: AudioPlayer = AudioPlayer.shared
+}
+
+public extension SharedContainer {
+    @MainActor var audioPlayer: Factory<AudioPlayer> {
+        self { AudioPlayerEnvironmentKey.defaultValue }.singleton
     }
 }
 
 public struct AudioFeedback: Feedback, ViewModifier {
-    @Environment(\.audioPlayer) private var player
+    @Injected(\.audioPlayer) private var player
 
     public func body(content: Content) -> some View {
         content
-            .environment(player)
+            .task(id: audio.self, {
+               try? await player.play(audio: audio)
+            })
     }
 
-   @State var audio: Audio
+    @State var audio: Audio
 
     init(audio: Audio) {
         self._audio = State(wrappedValue: audio)

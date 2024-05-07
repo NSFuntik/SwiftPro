@@ -11,8 +11,9 @@ private enum PlayerError: LocalizedError {
     }
 }
 
+@MainActor
 public final class AudioPlayer: NSObject, Observable, AVAudioPlayerDelegate {
-    private var player: AVAudioPlayer?
+    @MainActor private var player: AVAudioPlayer?
 
     @MainActor public static let shared = AudioPlayer()
 
@@ -42,8 +43,8 @@ public final class AudioPlayer: NSObject, Observable, AVAudioPlayerDelegate {
         player = nil
     }
 
-    @MainActor
-    public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    
+    nonisolated public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         Task { await stop() }
     }
 }
