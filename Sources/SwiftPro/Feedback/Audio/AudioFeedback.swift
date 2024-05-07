@@ -1,5 +1,6 @@
 import Factory
 import SwiftUI
+import CoreAudio
 
 public extension AnyFeedback {
     /// Specifies feedback that plays an audio file

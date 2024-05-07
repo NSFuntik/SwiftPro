@@ -1,4 +1,4 @@
-import AVFoundation
+import AVKit
 import SwiftUI
 
 private enum PlayerError: LocalizedError {
