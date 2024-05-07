@@ -12,8 +12,8 @@ public extension URLComponents {
         queryItems = parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
     }
 }
+
 extension URLRequest {
-    
     /// A computed property to get and set the query items on the URL request.
     var queryItems: [URLQueryItem]? {
         get {
@@ -25,23 +25,45 @@ extension URLRequest {
             guard let url = self.url else { return }
             var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
             components?.queryItems = newValue
-            
+
             // Update the URL of the URLRequest if new query items are set
             guard let url = components?.url else { return }
             self.url = url
         }
     }
 }
+
 public extension URL {
-    mutating func appending(query: [URLQueryItem]) -> URL {
-        guard var components: URLComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
-            let percentEncodedQuery: String = "?".appending(query.compactMap({ $0.name + (($0.value ?? "").isEmpty ? "" : "=".appending($0.value!)) }).joined(separator: "&"))
-            debugPrint(percentEncodedQuery.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? percentEncodedQuery)
-            return URL(string: self.absoluteString.appending(percentEncodedQuery.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? percentEncodedQuery)) ?? self.appending(path: percentEncodedQuery)
-        }
-        components.queryItems = query
-        self = components.url ?? self
-        return self
+    //    func appending(query: [URLQueryItem]) -> URL {
+    //        guard var components: URLComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
+    //            let percentEncodedQuery: String = "?".appending(query.compactMap({ $0.name + (($0.value ?? "").isEmpty ? "" : "=".appending($0.value!)) }).joined(separator: "&"))
+    //            debugPrint(percentEncodedQuery.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? percentEncodedQuery)
+    //            return URL(string: self.absoluteString.appending(percentEncodedQuery.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? percentEncodedQuery)) ?? self.appending(path: percentEncodedQuery)
+    //        }
+    //        components.queryItems = query
+    //        return self
+    //    }
+    /// Returns a URL constructed by appending the given path to self.
+    /// - Parameters:
+    ///   - path: The path to add
+    ///   - directoryHint: A hint to whether this URL will point to a directory
+
+    @available(iOS, introduced: 14, deprecated: 16, obsoleted: 16)
+    func appending(
+        path: String,
+        isDirectory: Bool = false
+    ) -> URL {
+        var url = self
+        url.appendPathComponent(path, isDirectory: isDirectory)
+        return url
+    }
+
+    @available(iOS, introduced: 14, deprecated: 16, obsoleted: 16)
+    mutating func append(
+        path: String,
+        isDirectory: Bool = false
+    ) {
+        self.appendPathComponent(path, isDirectory: isDirectory)
     }
 
     mutating func append(query: [URLQueryItem]) {
@@ -50,6 +72,14 @@ public extension URL {
         }
         components.queryItems = query
         self = components.url ?? self
+    }
+
+    func appending(query: [URLQueryItem]) -> URL? {
+        guard var components: URLComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
+            return nil
+        }
+        components.queryItems = query
+        return components.url
     }
 
     var attributes: [FileAttributeKey: Any]? {

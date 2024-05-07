@@ -19,8 +19,8 @@ let package = Package(
                  .upToNextMajor(from: "1.1.0")),
         .package(url: "https://github.com/shaps80/SwiftUIBackports", from: "2.8.0"),
         .package(url: "https://github.com/hmlongco/Factory.git", from: "2.3.2"),
+        .package(url: "https://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@github.com/NSFuntik/SFSymbolEnum", branch: "main"),
 
-        .package(url: "https://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@github.com/NSFuntik/SFSymbolEnum", branch: "main")
         
     ],
     
