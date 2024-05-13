@@ -17,7 +17,7 @@ public extension ISO8601DateFormatter {
 }
 
 public extension DateFormatter {
-     convenience init(dateFormat: String = ISO8601DateFormatter.string(from: .now, timeZone: .autoupdatingCurrent)) {
+    convenience init(dateFormat: String = ISO8601DateFormatter.string(from: .now, timeZone: .autoupdatingCurrent)) {
         self.init()
         locale = Locale.current
         self.dateFormat = dateFormat
@@ -75,6 +75,17 @@ public extension Date {
 
     var string: String {
         let string = ISO8601DateFormatter.full.string(from: self)
+        debugPrint(string)
+        return string
+    }
+
+    var time: String {
+        let format = "HH:mm"
+        var formatter = DateFormatter()
+        formatter.locale = Locale.current
+        formatter.dateFormat = format
+        let string = formatter.string(from: Date.now)
+        
         debugPrint(string)
         return string
     }
