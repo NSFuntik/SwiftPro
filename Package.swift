@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SwiftPro",
     platforms: [
-        .iOS(.v15), .macOS(.v13), .tvOS(.v15), .watchOS(.v8), .macCatalyst(.v13)
+        .iOS(.v15), .macOS(.v14), .tvOS(.v15), .watchOS(.v8), .macCatalyst(.v15)
     ],
     products: [
         .library(
@@ -18,7 +18,7 @@ let package = Package(
         .package(url:"https://github.com/apple/swift-collections.git",
                  .upToNextMajor(from: "1.1.0")),
         .package(url: "https://github.com/shaps80/SwiftUIBackports", from: "2.8.0"),
-        .package(url: "https://github.com/hmlongco/Factory.git", from: "2.3.2"),
+        .package(url: "https://github.com/hmlongco/Factory.git", branch: "main"),
         .package(url: "https://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@github.com/NSFuntik/SFSymbolEnum", branch: "main"),
 
         
