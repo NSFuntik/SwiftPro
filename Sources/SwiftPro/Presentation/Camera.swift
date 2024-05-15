@@ -7,9 +7,12 @@
 
 import AVFoundation
 import CoreImage
+import CoreMedia
+import os.log
 import Photos
 import SwiftUI
 import UIKit
+
 extension UIImage: Identifiable {
     public var id: Int {
         return hashValue
@@ -53,7 +56,7 @@ class CameraUtility {
 @frozen
 public struct CameraView: View {
     @Environment(\.dismiss) var dismiss
-    @StateObject private var camera: Camera = Camera()
+    private let camera: Camera = Camera()
     @State var viewfinderImage: Image? = nil
     @Binding var outputImage: UIImage?
     @State var capturedImage: UIImage? = nil
@@ -97,15 +100,14 @@ public struct CameraView: View {
         .ignoresSafeArea()
         .statusBar(hidden: true)
         .task {
-            // #if (targetEnvironment(simulator) || targetEnvironment(macCatalyst) || SWIFT_PACKAGE)
-            //            if #available(iOS 15.4, *) {
-            //                viewfinderImage = Image(symbol: .pc).symbolRenderingMode(.multicolor).resizable(resizingMode: .tile).interpolation(.high).renderingMode(.original)
-            //            } else {
-            //                viewfinderImage = Image(systemName: "video.slash").resizable(resizingMode: .stretch)
-            //            }
-            // #else
             await handleCameraPreviews()
-            // #endif
+        }
+        .onChange(of: authorizationStatus) { newValue in
+            if newValue == .authorized {
+                Task { @MainActor in
+                    await camera.start()
+                }
+            }
         }
     }
     
@@ -286,8 +288,13 @@ extension Label where Title == Text, Icon == Image {
     }
 }
 
-public
-class Camera: NSObject, ObservableObject {
+// Example dimensions assuming a square video frame for simplicity
+let pixels = 5000000 // Total pixels from calculation
+let dimension = Int32(sqrt(Double(pixels))) // Calculate dimension for a square
+
+let videoDimensions = CMVideoDimensions(width: dimension, height: dimension)
+
+public class Camera: NSObject {
     private let captureSession = AVCaptureSession()
     private var isCaptureSessionConfigured = false
     private var deviceInput: AVCaptureDeviceInput?
@@ -334,7 +341,7 @@ class Camera: NSObject, ObservableObject {
     private var captureDevice: AVCaptureDevice? {
         didSet {
             guard let captureDevice = captureDevice else { return }
-            debugPrint("Using capture device: \(captureDevice.localizedName)")
+            logger.debug("Using capture device: \(captureDevice.localizedName)")
             sessionQueue.async {
                 self.updateSessionForCaptureDevice(captureDevice)
             }
@@ -379,7 +386,7 @@ class Camera: NSObject, ObservableObject {
         }
     }()
     
-    override public init() {
+    @usableFromInline override init() {
         super.init()
         initialize()
     }
@@ -390,12 +397,13 @@ class Camera: NSObject, ObservableObject {
         captureDevice = availableCaptureDevices.first ?? AVCaptureDevice.default(for: .video)
         
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        NotificationCenter.default.addObserver(self, selector: #selector(updateForDeviceOrientation), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
     
     private func configureCaptureSession(completionHandler: (_ success: Bool) -> Void) {
         var success = false
         
-        captureSession.beginConfiguration()
+        self.captureSession.beginConfiguration()
         
         defer {
             self.captureSession.commitConfiguration()
@@ -406,7 +414,7 @@ class Camera: NSObject, ObservableObject {
             let captureDevice = captureDevice,
             let deviceInput = try? AVCaptureDeviceInput(device: captureDevice)
         else {
-            debugPrint("Failed to obtain video input.")
+            logger.error("Failed to obtain video input.")
             return
         }
         
@@ -418,15 +426,15 @@ class Camera: NSObject, ObservableObject {
         videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "VideoDataOutputQueue"))
         
         guard captureSession.canAddInput(deviceInput) else {
-            debugPrint("Unable to add device input to capture session.")
+            logger.error("Unable to add device input to capture session.")
             return
         }
         guard captureSession.canAddOutput(photoOutput) else {
-            debugPrint("Unable to add photo output to capture session.")
+            logger.error("Unable to add photo output to capture session.")
             return
         }
         guard captureSession.canAddOutput(videoOutput) else {
-            debugPrint("Unable to add video output to capture session.")
+            logger.error("Unable to add video output to capture session.")
             return
         }
         
@@ -437,8 +445,12 @@ class Camera: NSObject, ObservableObject {
         self.deviceInput = deviceInput
         self.photoOutput = photoOutput
         self.videoOutput = videoOutput
-        
-        photoOutput.isHighResolutionCaptureEnabled = false
+        if #available(macOS 10.15, iOS 16.0, tvOS 16.0, *) {
+            photoOutput.maxPhotoDimensions = videoDimensions
+        } else {
+            photoOutput.maxPhotoQualityPrioritization = .speed
+            photoOutput.isHighResolutionCaptureEnabled = false
+        }
         photoOutput.maxPhotoQualityPrioritization = .speed
         
         updateVideoOutputConnection()
@@ -451,19 +463,19 @@ class Camera: NSObject, ObservableObject {
     private func checkAuthorization() async -> Bool {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
-            debugPrint("Camera access authorized.")
+            logger.debug("Camera access authorized.")
             return true
         case .notDetermined:
-            debugPrint("Camera access not determined.")
+            logger.debug("Camera access not determined.")
             sessionQueue.suspend()
             let status = await AVCaptureDevice.requestAccess(for: .video)
             sessionQueue.resume()
             return status
         case .denied:
-            debugPrint("Camera access denied.")
+            logger.debug("Camera access denied.")
             return false
         case .restricted:
-            debugPrint("Camera library access restricted.")
+            logger.debug("Camera library access restricted.")
             return false
         @unknown default:
             return false
@@ -475,16 +487,15 @@ class Camera: NSObject, ObservableObject {
         do {
             return try AVCaptureDeviceInput(device: validDevice)
         } catch let error {
-            debugPrint("Error getting capture device input: \(error.localizedDescription)")
+            logger.error("Error getting capture device input: \(error.localizedDescription)")
             return nil
         }
     }
     
     private func updateSessionForCaptureDevice(_ captureDevice: AVCaptureDevice) {
         guard isCaptureSessionConfigured else { return }
-        captureSession.beginConfiguration()
-        captureSession.sessionPreset = AVCaptureSession.Preset.photo
         
+        captureSession.beginConfiguration()
         defer { captureSession.commitConfiguration() }
         
         for input in captureSession.inputs {
@@ -503,7 +514,8 @@ class Camera: NSObject, ObservableObject {
     }
     
     private func updateVideoOutputConnection() {
-        if let videoOutput = videoOutput, let videoOutputConnection = videoOutput.connection(with: .video) {
+        if let videoOutput = videoOutput,
+           let videoOutputConnection = videoOutput.connection(with: .video) {
             if videoOutputConnection.isVideoMirroringSupported {
                 videoOutputConnection.isVideoMirrored = isUsingFrontCaptureDevice
             }
@@ -513,7 +525,7 @@ class Camera: NSObject, ObservableObject {
     func start() async {
         let authorized = await checkAuthorization()
         guard authorized else {
-            debugPrint("Camera access was not authorized.")
+            logger.error("Camera access was not authorized.")
             return
         }
         
@@ -549,7 +561,7 @@ class Camera: NSObject, ObservableObject {
             let nextIndex = (index + 1) % availableCaptureDevices.count
             self.captureDevice = availableCaptureDevices[nextIndex]
         } else {
-            captureDevice = AVCaptureDevice.default(for: .video)
+            self.captureDevice = AVCaptureDevice.default(for: .video)
         }
     }
     
@@ -559,6 +571,11 @@ class Camera: NSObject, ObservableObject {
             orientation = UIScreen.orientation
         }
         return orientation
+    }
+    
+    @objc
+    func updateForDeviceOrientation() {
+        // TODO: Figure out if we need this for anything.
     }
     
     private func videoOrientationFor(_ deviceOrientation: UIDeviceOrientation) -> AVCaptureVideoOrientation? {
@@ -575,6 +592,33 @@ class Camera: NSObject, ObservableObject {
         guard let photoOutput = photoOutput else { throw CameraError.missingPhotoOutput }
         defer { didTakePicture = nil }
         
+        var photoSettings = AVCapturePhotoSettings()
+        
+        if photoOutput.availablePhotoCodecTypes.contains(.hevc) {
+            photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
+        }
+        
+        let isFlashAvailable = self.deviceInput?.device.isFlashAvailable ?? false
+        photoSettings.flashMode = isFlashAvailable ? .auto : .off
+        
+        if #available(macOS 10.15, iOS 16.0, tvOS 16.0, *) {
+            photoSettings.maxPhotoDimensions = videoDimensions
+        } else {
+            photoSettings.isHighResolutionPhotoEnabled = false
+        }
+        photoOutput.maxPhotoQualityPrioritization = .speed
+        if let previewPhotoPixelFormatType = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
+            photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewPhotoPixelFormatType]
+        }
+        photoSettings.photoQualityPrioritization = .speed
+        
+        if let photoOutputVideoConnection = photoOutput.connection(with: .video) {
+            if photoOutputVideoConnection.isVideoOrientationSupported,
+               let videoOrientation = self.videoOrientationFor(self.deviceOrientation) {
+                photoOutputVideoConnection.videoOrientation = videoOrientation
+            }
+        }
+        
         return try await withCheckedThrowingContinuation { continuation in
             didTakePicture = { continuation.resume(with: $0) }
             sessionQueue.async {
@@ -585,29 +629,15 @@ class Camera: NSObject, ObservableObject {
     }
 }
 
-public enum CameraError: Error {
-    case missingPhotoOutput, missingVideoOutput
-}
-
 extension Camera: AVCapturePhotoCaptureDelegate {
-    public func photoOutput(
-        _ output: AVCapturePhotoOutput,
-        didFinishProcessingPhoto photo: AVCapturePhoto,
-        error: Error?
-    ) {
-        if let error {
-            didTakePicture?(.failure(error))
-        } else {
-            didTakePicture?(.success(photo))
+    public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        if let error = error {
+            logger.error("Error capturing photo: \(error.localizedDescription)")
+            return
         }
+        
+        addToPhotoStream?(photo)
     }
-}
-
-struct PhotoData {
-    var thumbnailImage: Image
-    var thumbnailSize: (width: Int, height: Int)
-    var imageData: Data
-    var imageSize: (width: Int, height: Int)
 }
 
 extension Camera: AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -618,9 +648,39 @@ extension Camera: AVCaptureVideoDataOutputSampleBufferDelegate {
            let videoOrientation = videoOrientationFor(deviceOrientation) {
             connection.videoOrientation = videoOrientation
         }
-        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-        addToPreviewStream?(ciImage)
+        
+        addToPreviewStream?(CIImage(cvPixelBuffer: pixelBuffer))
     }
+}
+
+fileprivate extension UIScreen {
+    var orientation: UIDeviceOrientation {
+        let point = coordinateSpace.convert(CGPoint.zero, to: fixedCoordinateSpace)
+        if point == CGPoint.zero {
+            return .portrait
+        } else if point.x != 0 && point.y != 0 {
+            return .portraitUpsideDown
+        } else if point.x == 0 && point.y != 0 {
+            return .landscapeRight // .landscapeLeft
+        } else if point.x != 0 && point.y == 0 {
+            return .landscapeLeft // .landscapeRight
+        } else {
+            return .unknown
+        }
+    }
+}
+
+fileprivate let logger = Logger(subsystem: "com.apple.swiftplaygroundscontent.capturingphotos", category: "Camera")
+
+public enum CameraError: Error {
+    case missingPhotoOutput, missingVideoOutput
+}
+
+struct PhotoData {
+    var thumbnailImage: Image
+    var thumbnailSize: (width: Int, height: Int)
+    var imageData: Data
+    var imageSize: (width: Int, height: Int)
 }
 
 public extension CIImage {
@@ -676,8 +736,11 @@ extension AVCapturePhotoOutput {
             photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
         } else {
             photoSettings = AVCapturePhotoSettings()
-            photoSettings.isHighResolutionPhotoEnabled = false
-        }
+            if #available(macOS 10.15, iOS 16.0, tvOS 16.0, *) {
+                photoSettings.maxPhotoDimensions = videoDimensions
+            } else {
+                photoSettings.isHighResolutionPhotoEnabled = false
+            }        }
         
         photoSettings.photoQualityPrioritization = .speed
         if let pixelFormatType = photoSettings.availablePreviewPhotoPixelFormatTypes.first {

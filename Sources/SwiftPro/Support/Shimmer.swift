@@ -33,12 +33,14 @@ public struct Shimmer: ViewModifier {
     }
     
     /// The default animation effect.
-    public static let defaultAnimation = Animation.smooth(duration: 0.6).speed(0.3).repeatForever(autoreverses: true)
+    public static let defaultAnimation = Animation.smooth(duration: 0.5).speed(0.3).repeatForever(autoreverses: false)
     
     // A default gradient for the animated mask.
     public static let defaultGradient = Gradient(colors: [
         .black.opacity(0.3), // translucent
-        .black, // opaque
+        .black,
+        .black.opacity(0.88), // opaque
+        .black,
         .black.opacity(0.3) // translucent
     ])
     
@@ -85,6 +87,7 @@ public struct Shimmer: ViewModifier {
             .transition(.identity)
             .mask(LinearGradient(gradient: gradient, startPoint: startPoint, endPoint: endPoint))
             .animation(animation, value: isInitialState)
+            .animation(animation.delay(0.4), value: !isInitialState)
             .onAppear {
                 // Delay the animation until the initial layout is established
                 // to prevent animating the appearance of the view
@@ -108,7 +111,7 @@ public extension View {
         active: Bool = true,
         animation: Animation = Shimmer.defaultAnimation,
         gradient: Gradient = Shimmer.defaultGradient,
-        bandSize: CGFloat = 0.3
+        bandSize: CGFloat = 1.33
     ) -> some View {
         if active {
             modifier(Shimmer(animation: animation, gradient: gradient, bandSize: bandSize))
@@ -125,7 +128,7 @@ public extension View {
     ///   - delay:A delay in seconds. Defaults to `0.25`.
 //    @available(*, deprecated, message: "Use shimmering(active:animation:gradient:bandSize:) instead.")
     @ViewBuilder func shimmering(
-        active: Bool = true, duration: Double, bounce: Bool = false, delay: Double = 0.25
+        active: Bool = true, duration: Double, bounce: Bool = false, delay: Double = 0.01
     ) -> some View {
         shimmering(
             active: active,

@@ -2,6 +2,14 @@ import Factory
 import SwiftUI
 import CoreAudio
 
+#Preview(body: {
+    @State var output: UIImage? = nil
+    
+    return CameraView($output).task {
+        await (AudioFeedback(audio: .busyToneANSI).perform())
+    }
+})
+
 public extension AnyFeedback {
     /// Specifies feedback that plays an audio file
     /// - Parameter audio: The audio to play when this feedback is triggered
@@ -37,26 +45,26 @@ public extension SharedContainer {
 
 public struct AudioFeedback: Feedback, ViewModifier {
     @Injected(\.audioPlayer) private var player
-
+    
     public func body(content: Content) -> some View {
         content
-            .task(id: audio.self, {
-               try? await player.play(audio: audio)
+            .task(id: audio.hashValue, {
+                try? await player.play(audio: audio)
             })
     }
-
+    
     @State var audio: Audio
-
+    
     init(audio: Audio) {
         self._audio = State(wrappedValue: audio)
     }
-
+    
     @MainActor
     public func perform() async {
         do {
             try await player.play(audio: audio)
         } catch {
-            print(error)
+            debugPrint("Error playing audio", error)
         }
     }
 }

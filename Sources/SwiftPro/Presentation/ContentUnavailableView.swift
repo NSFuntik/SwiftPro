@@ -7,8 +7,23 @@
 
 import SFSymbolEnum
 import SwiftUI
+import Photos
 
-@available(iOS, introduced: 14.0, deprecated: 16.0, renamed: "ContentUnavailableView")
+#Preview(body: {
+    ContentUnavailableView("Camera not avaible",
+                           image: SFSymbol.questionmarkVideo.image,
+                           action: {
+        PHPhotoLibrary.requestAuthorization { status in
+            if status == .authorized {
+                DispatchQueue.main.async {
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                }
+            }
+        }
+    }
+        )
+})
+//@available(iOS, introduced: 14.0, deprecated: 16.0, renamed: "ContentUnavailableView")
 public struct ContentUnavailableView<Content>: View where Content: View {
     let title: String
     let message: String
@@ -76,17 +91,22 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         VStack(spacing: 16) {
             image
                 .font(.largeTitle)
+                .imageScale(.large)
             Text(title)
                 .font(.title.monospaced().bold()).foregroundStyle(.primary)
             Text(message)
-                .font(.footnote)
+                .font(.subheadline.bold().monospaced())
                 .multilineTextAlignment(.center).foregroundStyle(.secondary)
                 .highlightEffect()
             content?()
             if let _ = action {
                 AsyncButton(action: action ?? { await refresh?() ?? dismiss() }, label: {
-                    Text("Retry").padding(.horizontal).font(.subheadline.weight(.medium))
-                }).padding().buttonStyle(.refresh)
+                    Label("Retry", symbol: .arrowClockwise)
+                    .padding(.horizontal)
+                        .font(.subheadline.bold().monospaced())
+                        .hoverEffect()
+                    
+                }).padding().buttonStyle(.refresh).clipped()
             }
         }
         .padding().symbolRenderingMode(.hierarchical)
