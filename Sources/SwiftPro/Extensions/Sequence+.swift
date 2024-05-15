@@ -11,7 +11,7 @@ public extension Optional where Wrapped: Collection {
     var isEmpty: Bool {
         self?.endIndex == self?.startIndex
     }
-    
+
     var nonEmpty: Bool {
         self?.endIndex != self?.startIndex
     }
@@ -22,54 +22,101 @@ public extension Array {
         _ transform: (Element) async throws -> T
     ) async rethrows -> [T] {
         var values = [T]()
-        
+
         for element in self {
             try await values.append(transform(element))
         }
-        
+
         return values
     }
-    
+
     func asyncCompactMap<T>(
         _ transform: (Element) async throws -> T?
     ) async rethrows -> [T] {
         var values = [T]()
-        
+
         for element in self {
             if let el = try await transform(element) {
                 values.append(el)
             }
         }
-        
+
         return values
     }
-    
+
     @inlinable var lastIndex: Int { endIndex - 1 }
 }
 
-public extension RandomAccessCollection where Element: Equatable {
-    subscript(safe index: Index?) -> Element? {
+public extension Array where Element: Identifiable & Equatable, Index == Int {
+    subscript(safe index: Int) -> Element? {
         get {
-            guard let index else { return nil }
             return indices.contains(index) ? self[index] : nil
         }
-        
+
         set {
-            if let newValue, let index, indices.contains(index) {
-                self[safe: index] = newValue
+            guard indices.contains(index) else { debugPrint("There is NO value for index: \(index)")
+                if self.underestimatedCount > index { }
+                return
             }
+            if let newValue {
+                self[safe: index] = newValue
+            } else { self.remove(at: index) }
         }
     }
 }
 
-public extension Sequence where Iterator.Element: (Hashable & Comparable) {
+public extension RangeReplaceableCollection where Element: Identifiable & Equatable, Index == Int {
+    subscript(safe index: Int) -> Element? {
+        get {
+            return self.indices.contains(index) ? self[index] : nil
+        }
+        
+        set {
+            guard indices.contains(index) else { debugPrint("There is NO value for index: \(index)")
+                if self.underestimatedCount > index { }
+                return
+            }
+            if let newValue {
+                self[safe: index] = newValue
+            } else { self.remove(at: index) }
+        }
+    }
+}
+extension RangeReplaceableCollection where Index: Hashable {
+    public mutating func removeAll<C>(at collection: C) -> Self where
+C: Collection,
+    C.Element == Index
+    {
+        let indices = Set(collection)
+        // Trap if number of elements in the set is different from the collection.
+        // Trap if an index is out of range.
+        precondition(
+            indices.count == collection.count &&
+            indices.allSatisfy(self.indices.contains)
+        )
+        return indices
+            .lazy
+            .sorted()
+            .enumerated()
+            .reduce(into: .init()) { result, value in
+                let (offset, index) = value
+                if offset == 0 {
+                    result.reserveCapacity(indices.count)
+                }
+                let shiftedIndex = self.index(index, offsetBy: -offset)
+                let element = remove(at: shiftedIndex)
+                result.append(element)
+            }
+    }
+}
+public extension Sequence where Iterator.Element: Hashable & Comparable {
     func unique() -> [Iterator.Element] {
         let reduced = reduce(into: Set<Iterator.Element>()) { partialResult, element in
             partialResult.update(with: element)
         }
         return Array(reduced)
     }
-    
+
     func unique(by areInIncreasingOrder: (Iterator.Element, Iterator.Element) -> Bool) -> [Iterator.Element] {
         var uniqueElements: Set<Iterator.Element> = []
         forEach { element in
@@ -88,7 +135,7 @@ public extension Dictionary where Value == Optional<Any> {
             return value
         }
     }
-    
+
     func removingEmptyValues() -> [Key: Any] {
         self.removingNilValues().compactMapValues {
             if let value = $0 as? [Any] {
@@ -103,11 +150,11 @@ public extension Dictionary where Value == Optional<Any> {
     }
 }
 
-public  extension Dictionary where Value == Value {
+public extension Dictionary where Value == Value {
     var keyValuePairs: [(key: String, value: String)] {
         self.jsonElements.compactMap({ ("\($0.key)", "\(String(describing: $0.value))") })
     }
-    
+
     func removingEmptyValues() -> [Key: Any] {
         self.compactMapValues {
             if let value = $0 as? [Any] {

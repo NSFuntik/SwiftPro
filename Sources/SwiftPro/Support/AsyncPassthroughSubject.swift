@@ -6,15 +6,31 @@
 //
 
 import Foundation
+
+
+/// A simple implementation of an asynchronous passthrough subject using Swift's concurrency features.
+
+
+/**
+ An actor that bridges an asynchronous sequence by providing the ability to observe elements and send elements to multiple subscribers.
+ */
 public actor AsyncPassthroughSubject<Element> {
+    /// Array to store continuations for different tasks.
     var tasks: [AsyncStream<Element>.Continuation] = []
     
+    /// Deinitializes the subject by finishing all stored tasks.
     deinit {
         tasks.forEach { $0.finish() }
     }
     
+    /// Initializes an instance of AsyncPassthroughSubject.
     public init() {}
     
+    /**
+     Creates an asynchronous stream for receiving notifications of elements.
+     
+     - Returns: An `AsyncStream` of type `Element`.
+     */
     public func notifications() -> AsyncStream<Element> {
         AsyncStream { [weak self] continuation in
             let task = Task { [weak self] in
@@ -27,6 +43,11 @@ public actor AsyncPassthroughSubject<Element> {
         }
     }
     
+    /**
+     Sends an element to all subscribed tasks.
+     
+     - Parameter element: The element to be sent.
+     */
     nonisolated
     public func send(_ element: Element) {
         Task { await _send(element) }
@@ -39,10 +60,18 @@ public actor AsyncPassthroughSubject<Element> {
         }
     }
     
+    /**
+     Stores the provided continuation for future notifications.
+     
+     - Parameter continuation: The continuation to be stored.
+     */
     func storeContinuation(_ continuation: AsyncStream<Element>.Continuation) {
         tasks.append(continuation)
     }
     
+    /**
+     Finishes all pending tasks associated with the subject.
+     */
     nonisolated
     public func finish() {
         Task { await _finish() }
@@ -56,3 +85,4 @@ public actor AsyncPassthroughSubject<Element> {
         }
     }
 }
+

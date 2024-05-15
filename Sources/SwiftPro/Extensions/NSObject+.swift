@@ -16,6 +16,22 @@ public func runOnMainActor(
     }
 }
 
+public func asyncOnMainActor(
+    _ action: @escaping @Sendable @MainActor  () async -> Void
+) {
+    Task { @MainActor in
+       await action()
+    }
+}
+
+public func runOnMainQueue(
+    _ action: @escaping () -> Void
+) {
+    DispatchQueue.main.async {
+        action()
+    }
+}
+
 public extension UIView {
     func closestVC() -> UIViewController? {
         var responder: UIResponder? = self
