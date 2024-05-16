@@ -391,9 +391,9 @@ public extension PhotoPicker<Text> {
     }
 }
 
-extension PHPickerResult{
+public extension PHPickerResult{
     
-    public func loadTransfer<T>(_type: T.Type) async throws -> T? {
+    func loadTransfer<T>(_type: T.Type) async throws -> T? {
         do {
             let data = try await itemProvider.loadData()
             
@@ -411,7 +411,7 @@ extension PHPickerResult{
         }
     }
     
-    public func loadTransfer<T>(_type: T.Type, completion: @escaping (Result<T?, Error>) -> Void){
+    func loadTransfer<T>(_type: T.Type, completion: @escaping (Result<T?, Error>) -> Void){
         Task {
             let data = try? await itemProvider.loadData()
             switch _type {

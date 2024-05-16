@@ -13,7 +13,7 @@ public extension URLComponents {
     }
 }
 
-extension URLRequest {
+public extension URLRequest {
     /// A computed property to get and set the query items on the URL request.
     var queryItems: [URLQueryItem]? {
         get {

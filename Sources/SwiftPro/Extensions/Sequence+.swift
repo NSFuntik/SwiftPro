@@ -70,7 +70,7 @@ public extension RangeReplaceableCollection where Element: Identifiable & Equata
         get {
             return self.indices.contains(index) ? self[index] : nil
         }
-        
+
         set {
             guard indices.contains(index) else { debugPrint("There is NO value for index: \(index)")
                 if self.underestimatedCount > index { }
@@ -82,17 +82,17 @@ public extension RangeReplaceableCollection where Element: Identifiable & Equata
         }
     }
 }
+
 extension RangeReplaceableCollection where Index: Hashable {
     public mutating func removeAll<C>(at collection: C) -> Self where
-C: Collection,
-    C.Element == Index
-    {
+        C: Collection,
+        C.Element == Index {
         let indices = Set(collection)
         // Trap if number of elements in the set is different from the collection.
         // Trap if an index is out of range.
         precondition(
             indices.count == collection.count &&
-            indices.allSatisfy(self.indices.contains)
+                indices.allSatisfy(self.indices.contains)
         )
         return indices
             .lazy
@@ -109,6 +109,7 @@ C: Collection,
             }
     }
 }
+
 public extension Sequence where Iterator.Element: Hashable & Comparable {
     func unique() -> [Iterator.Element] {
         let reduced = reduce(into: Set<Iterator.Element>()) { partialResult, element in
