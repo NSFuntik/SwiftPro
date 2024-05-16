@@ -309,7 +309,7 @@ extension Label where Title == Text, Icon == Image {
 //
 ////let videoDimensions = CMVideoFormatDescriptionGetDimensions(.)(width: dimension, height: dimension)
 
-public class Camera: NSObject {
+public class Camera: NSObject, AVCapturePhotoCaptureDelegate {
     private let captureSession = AVCaptureSession()
     private var isCaptureSessionConfigured = false
     private var deviceInput: AVCaptureDeviceInput?
@@ -604,6 +604,41 @@ public class Camera: NSObject {
         }
     }
 
+    lazy var photoSettings: AVCapturePhotoSettings = {
+        guard let photoOutput = photoOutput else { return
+            AVCapturePhotoSettings()
+        }
+
+        var photoSettings = AVCapturePhotoSettings()
+
+        if photoOutput.availablePhotoCodecTypes.contains(.jpeg) {
+            photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
+        }
+
+        let isFlashAvailable = self.deviceInput?.device.isFlashAvailable ?? false
+        photoSettings.flashMode = isFlashAvailable ? .auto : .off
+
+        photoSettings.isHighResolutionPhotoEnabled = false
+        photoSettings.photoQualityPrioritization = .speed
+        if #available(macOS 10.15, iOS 16.0, tvOS 16.0, *) {
+            if let dimention = self.deviceInput?.device.activeFormat.supportedMaxPhotoDimensions.sorted(by: { ($0.width * $0.height) < ($1.width * $1.height) }).first {
+                photoSettings.maxPhotoDimensions = dimention
+            }
+        }
+        if let previewPhotoPixelFormatType = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
+            photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewPhotoPixelFormatType]
+        }
+        photoSettings.photoQualityPrioritization = .speed
+
+        if let photoOutputVideoConnection = photoOutput.connection(with: .video) {
+            if photoOutputVideoConnection.isVideoOrientationSupported,
+               let videoOrientation = self.videoOrientationFor(self.deviceOrientation) {
+                photoOutputVideoConnection.videoOrientation = videoOrientation
+            }
+        }
+        return photoSettings
+    }()
+
     func takePhoto() async throws -> AVCapturePhoto {
         guard let photoOutput = photoOutput else { throw CameraError.missingPhotoOutput }
         defer { didTakePicture = nil }
@@ -611,47 +646,20 @@ public class Camera: NSObject {
         return try await withCheckedThrowingContinuation { continuation in
             didTakePicture = { continuation.resume(with: $0) }
             sessionQueue.async {
-                var photoSettings = AVCapturePhotoSettings()
-
-                if photoOutput.availablePhotoCodecTypes.contains(.hevc) {
-                    photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
-                }
-
-                let isFlashAvailable = self.deviceInput?.device.isFlashAvailable ?? false
-                photoSettings.flashMode = isFlashAvailable ? .auto : .off
-
-                photoSettings.isHighResolutionPhotoEnabled = false
-                photoOutput.maxPhotoQualityPrioritization = .speed
-                if #available(macOS 10.15, iOS 16.0, tvOS 16.0, *) {
-                    if let dimention = self.deviceInput?.device.activeFormat.supportedMaxPhotoDimensions.sorted(by: { ($0.width * $0.height) < ($1.width * $1.height) }).first {
-                        photoSettings.maxPhotoDimensions = dimention
-                    }
-                }
-                if let previewPhotoPixelFormatType = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
-                    photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewPhotoPixelFormatType]
-                }
-                photoSettings.photoQualityPrioritization = .speed
-
-                if let photoOutputVideoConnection = photoOutput.connection(with: .video) {
-                    if photoOutputVideoConnection.isVideoOrientationSupported,
-                       let videoOrientation = self.videoOrientationFor(self.deviceOrientation) {
-                        photoOutputVideoConnection.videoOrientation = videoOrientation
-                    }
-                }
-                photoOutput.capturePhoto(with: photoSettings, delegate: self)
+                photoOutput.capturePhoto(with: self.photoSettings, delegate: self)
             }
         }
     }
-}
 
-extension Camera: AVCapturePhotoCaptureDelegate {
     public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error = error {
             logger.error("Error capturing photo: \(error.localizedDescription)")
+            self.didTakePicture?(.failure(error))
+
             return
         }
-
         addToPhotoStream?(photo)
+        self.didTakePicture?(.success(photo))
     }
 }
 
