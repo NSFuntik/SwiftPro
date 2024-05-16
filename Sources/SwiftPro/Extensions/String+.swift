@@ -16,6 +16,27 @@ public extension String {
 }
 
 public extension String {
+    
+    /// Check if this string has any content.
+    var hasContent: Bool {
+        !isEmpty
+    }
+    
+    /// Check if this string has any content after trimming.
+    var hasTrimmedContent: Bool {
+        !trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    
+    /// Check if this string contains another string.
+    func contains(_ string: String, caseSensitive: Bool) -> Bool {
+        caseSensitive
+        ? contains(string)
+        : range(of: string, options: .caseInsensitive) != nil
+    }
+}
+
+public extension String {
     var date: Date? {
         ISO8601DateFormatter.full.date(from: self)
     }

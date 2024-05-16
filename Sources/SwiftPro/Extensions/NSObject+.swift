@@ -32,6 +32,93 @@ public func runOnMainQueue(
     }
 }
 
+#if canImport(UIKit)
+import UIKit
+
+#elseif canImport(AppKit)
+import AppKit
+public typealias Image = NSImage
+#endif
+
+func unwrapOrThrow<T>(_ optional: T?, _ error: Error) throws -> T {
+    if let value = optional {
+        return value
+    } else {
+        throw error
+    }
+}
+
+extension Bool {
+    func trueOrThrow(_ error: Error) throws {
+        if !self {
+            throw error
+        }
+    }
+}
+
+public extension Optional {
+    
+    /// Whether or not the value is `nil`.
+    var isNil: Bool { self == nil }
+    
+    /// Whether or not the value is set and not `nil`.
+    var isSet: Bool { !isNil }
+}
+
+/// Use to wrap primitive Codable
+public struct TypeWrapper<T: Codable>: Codable {
+    enum CodingKeys: String, CodingKey {
+        case object
+    }
+    
+    public let object: T
+    
+    public init(object: T) {
+        self.object = object
+    }
+}
+
+class Utils {
+    static func image(data: Data) -> UIImage? {
+#if canImport(UIKit)
+        return UIImage(data: data)
+#elseif canImport(AppKit)
+        return NSImage(data: data)
+#else
+        return nil
+#endif
+    }
+    
+    static func data(image: UIImage) -> Data? {
+#if canImport(UIKit)
+        return image.jpegData(compressionQuality: 0.9)
+#elseif canImport(AppKit)
+        return image.tiffRepresentation
+#else
+        return nil
+#endif
+    }
+}
+
+public struct File {
+    public let name: String
+    public let url: URL
+    public let modificationDate: Date?
+    public let size: UInt64?
+}
+
+public extension File {
+    init?(url: URL) {
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path) else {
+            return nil
+        }
+        self.name = url.lastPathComponent
+        self.url = url
+        self.modificationDate = attributes[.modificationDate] as? Date
+        self.size = attributes[.size] as? UInt64
+    }
+}
+
 public extension UIView {
     func closestVC() -> UIViewController? {
         var responder: UIResponder? = self
@@ -45,55 +132,6 @@ public extension UIView {
     }
 }
 
-public extension UIScreen {
-    @nonobjc
-    static var mainScreen: UIScreen { .main }
-    
-    @nonobjc
-    static var orientation: UIDeviceOrientation {
-        let point = UIScreen.mainScreen.coordinateSpace.convert(CGPoint.zero, to: UIScreen.mainScreen.fixedCoordinateSpace)
-        if point == CGPoint.zero {
-            return .portrait
-        } else if point.x != 0 && point.y != 0 {
-            return .portraitUpsideDown
-        } else if point.x == 0 && point.y != 0 {
-            return .landscapeRight // .landscapeLeft
-        } else if point.x != 0 && point.y == 0 {
-            return .landscapeLeft // .landscapeRight
-        } else {
-            return .unknown
-        }
-    }
-}
-
-public extension UIDevice {
-    static var isIPad: Bool {
-        UIDevice.current.userInterfaceIdiom == .pad
-    }
-    
-    static var isIPhone: Bool {
-        UIDevice.current.userInterfaceIdiom == .phone
-    }
-    
-    static var deviceId: String {
-        if let uuid = UIDevice.current.identifierForVendor?.uuidString {
-            debugPrint("IdentifierForVendor Device ID: \(uuid)")
-            return uuid
-        } else {
-            debugPrint("Unable to retrieve device ID.")
-            debugPrint("Requesting tracking authorization.")
-            if let id = UserDefaults.standard.string(forKey: "deviceID") {
-                debugPrint("UserDefaults Device ID: \(id)")
-                return id
-            } else {
-                let id = UUID().uuidString
-                UserDefaults.standard.set(id, forKey: "deviceID")
-                debugPrint("NEW UserDefaults Device ID: \(id)")
-                return id
-            }
-        }
-    }
-}
 
 public extension CGFloat {
     @inline(__always)

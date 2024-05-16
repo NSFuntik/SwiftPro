@@ -190,9 +190,36 @@ public extension UIColor {
     }
 }
 
-extension Binding {
-    @inlinable
-    func unwrapped<T>(_ defaultValue: T) -> Binding<T> where Value == Optional<T> {
-        Binding<T>(get: { self.wrappedValue ?? defaultValue }, set: { self.wrappedValue = $0 })
+
+
+
+
+public extension View {
+    @ViewBuilder
+    func highlightEffect() -> some View {
+        if #available(iOS 15, *) {
+            contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 13, style: .continuous).inset(by: -20))
+                .hoverEffect(.highlight)
+        } else {
+            hoverEffect(.highlight)
+        }
+    }
+    
+    @ViewBuilder
+    func ignoreKeyboard() -> some View {
+        if #available(iOS 14, *) {
+            ignoresSafeArea(.keyboard, edges: .all)
+        } else {
+            self
+        }
+    }
+    
+    @ViewBuilder
+    func vibrantForeground(thick: Bool = false) -> some View {
+        if #available(iOS 15, *) {
+            foregroundStyle(thick ? .ultraThickMaterial : .bar)
+        } else {
+            foregroundColor(Color(.systemBackground))
+        }
     }
 }

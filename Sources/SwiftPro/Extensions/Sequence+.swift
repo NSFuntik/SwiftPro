@@ -18,6 +18,15 @@ public extension Optional where Wrapped: Collection {
 }
 
 public extension Array {
+    @inlinable
+    func appending(contentsOf other: [Element]) -> [Element] {
+        var result = self
+        result.append(contentsOf: other)
+        return result
+    }
+}
+
+public extension Array {
     func asyncMap<T>(
         _ transform: (Element) async throws -> T
     ) async rethrows -> [T] {
@@ -111,6 +120,14 @@ extension RangeReplaceableCollection where Index: Hashable {
 }
 
 public extension Sequence where Iterator.Element: Hashable & Comparable {
+    /// Group the sequence into a dictionary.
+    ///
+    /// The operation can use any property from the items as
+    /// the dictionary key.
+    func grouped<T>(by grouper: (Element) -> T) -> [T: [Element]] {
+        Dictionary(grouping: self, by: grouper)
+    }
+
     func unique() -> [Iterator.Element] {
         let reduced = reduce(into: Set<Iterator.Element>()) { partialResult, element in
             partialResult.update(with: element)
@@ -171,4 +188,17 @@ public extension Dictionary where Value == Value {
 }
 
 public extension Dictionary where Value == Optional<Any> {
+}
+
+public extension ComparisonResult {
+    
+    /// This is a shorthand for `.orderedAscending`.
+    static var ascending: ComparisonResult {
+        .orderedAscending
+    }
+    
+    /// This is a shorthand for `.orderedDescending`.
+    static var descending: ComparisonResult {
+        .orderedDescending
+    }
 }

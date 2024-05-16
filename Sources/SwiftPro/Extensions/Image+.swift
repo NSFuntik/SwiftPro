@@ -7,6 +7,7 @@
 
 import AVFoundation
 import UIKit
+import SwiftUI
 
 public extension UIImage.Orientation {
     init(_ cgOrientation: CGImagePropertyOrientation) {
@@ -23,6 +24,13 @@ public extension UIImage.Orientation {
     }
 }
 
+public extension Image {
+    
+    /// This is a shorthand for `Image(systemName:)`.
+    static func system(_ name: String) -> Image {
+        .init(systemName: name)
+    }
+}
 public extension UIImage {
     func fixOrientation() -> UIImage {
         if imageOrientation == .up {
