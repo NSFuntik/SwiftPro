@@ -28,9 +28,9 @@ import Foundation
         internal var data: Data
     }
 
-    extension String: Shareable {
-        public var pathExtensionTXT: String { "txt" }
-        public var itemProvider: NSItemProvider? {
+    public extension String {
+        var pathExtensionTXT: String { "txt" }
+        var itemProvider: NSItemProvider? {
             do {
                 let url = URL(fileURLWithPath: NSTemporaryDirectory())
                     .appendingPathComponent("\(UUID().uuidString)")
@@ -43,13 +43,13 @@ import Foundation
         }
     }
 
-    extension URL: Shareable {
+    extension URL {
         public var itemProvider: NSItemProvider? {
             .init(contentsOf: self)
         }
     }
 
-    extension Image: Shareable {
+    extension Image {
         public var pathExtension: String { "jpg" }
         public var itemProvider: NSItemProvider? {
             do {
@@ -72,7 +72,7 @@ import Foundation
         }
     }
 
-    extension UIImage: Shareable {
+    extension UIImage {
         public var pathExtension: String { "jpg" }
         public var itemProvider: NSItemProvider? {
             do {
@@ -176,7 +176,7 @@ import Foundation
     }
 
     #if os(iOS)
-        extension ColorRenderingMode {
+        public extension ColorRenderingMode {
             var range: UIGraphicsImageRendererFormat.Range {
                 switch self {
                 case .extendedLinear: return .extended
