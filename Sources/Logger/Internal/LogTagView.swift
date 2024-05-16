@@ -6,11 +6,11 @@
 //
 
 import SwiftUI
-import OrderedCollections
+
 
 struct LogTagView: View {
     
-    @Binding private var selectedTags: OrderedSet<String>
+    @Binding private var selectedTags: Set<String>
     
     var isSelected: Bool {
         selectedTags.contains(name)
@@ -18,7 +18,7 @@ struct LogTagView: View {
 
     private let name: String
     
-    init(name: String, selectedTags: Binding<OrderedSet<String>>) {
+    init(name: String, selectedTags: Binding<Set<String>>) {
         self.name = name
         self._selectedTags = selectedTags
     }
@@ -28,7 +28,7 @@ struct LogTagView: View {
             if isSelected {
                 selectedTags.remove(name)
             } else {
-                selectedTags.append(name)
+                selectedTags.insert(name)
             }
         } label: {
             ZStack {

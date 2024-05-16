@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Combine
-import OrderedCollections
 
 struct LogFilterView: View {
     
@@ -15,7 +14,7 @@ struct LogFilterView: View {
     @State private var searchText: String = ""
     @State private var contentSize: CGSize = .zero
     @State private var displayedTags: [String] = []
-    @State private var selectedTags: OrderedSet<String>
+    @State private var selectedTags: Set<String>
     
     private var isPresented: Binding<Bool>
     

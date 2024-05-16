@@ -17,10 +17,10 @@ public extension View {
 
     @ViewBuilder @inlinable
     func `if`<T>(
-        _ condition: Bool,
+        _ condition: @autoclosure () -> Bool,
         _ transform: (Self) -> T)
         -> some View where T: View {
-        if condition {
+        if condition() {
             transform(self)
         } else {
             self
@@ -29,11 +29,11 @@ public extension View {
 
     @ViewBuilder @inlinable
     func `if`<T, _T>(
-        _ condition: Bool,
+        _ condition: @autoclosure () -> Bool,
         _ transform: (Self) -> T,
         else _transform: (Self) -> _T
     ) -> some View where T: View, _T: View {
-        if condition {
+        if condition() {
             transform(self)
         } else {
             _transform(self)
@@ -54,7 +54,7 @@ public extension View {
             return foregroundColor(color)
         }
     }
-    
+
     @inlinable
     func foregroundStyle(_ color: Color) -> some View {
         if #available(iOS 14, *) {
@@ -91,8 +91,8 @@ public extension View {
 
     @inlinable
     func spacing() -> some View { modifier(Spacing()) }
-
 }
+
 @usableFromInline
 struct Spacing: ViewModifier {
     @inlinable
@@ -131,8 +131,19 @@ extension Font {
     }
 }
 
+/**
+ A `UIColor` extension that provides functionality for generating adaptive colors based on a seed string.
+ - Author: Your Name
+ */
 public extension UIColor {
+    /**
+     Generates a light color based on a seed string.
+     - Parameters:
+     - seed: A string used as a seed for random color generation.
+     - Returns: A `UIColor` object representing the generated color.
+     */
     fileprivate class func lightColor(withSeed seed: String) -> UIColor {
+        // Generate a light color
         srand48(seed.hash)
 
         let hue = CGFloat(drand48())
@@ -142,7 +153,14 @@ public extension UIColor {
         return UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1.0)
     }
 
+    /**
+     Generates a dark color based on a seed string.
+     - Parameters:
+     - seed: A string used as a seed for random color generation.
+     - Returns: A `UIColor` object representing the generated color.
+     */
     fileprivate class func darkColor(withSeed seed: String) -> UIColor {
+        // Generate a dark color
         srand48(seed.hash)
 
         let hue = CGFloat(drand48())
@@ -152,6 +170,12 @@ public extension UIColor {
         return UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: 1.0)
     }
 
+    /**
+     // Generates an adaptive color that adapts to the user interface style
+     - Parameters:
+     - seed: A string used as a seed for random color generation.
+     - Returns: A `UIColor` object representing the generated adaptive color.
+     */
     class func adaptiveColor(withSeed seed: String) -> UIColor {
         let light = lightColor(withSeed: seed)
         let dark = darkColor(withSeed: seed)

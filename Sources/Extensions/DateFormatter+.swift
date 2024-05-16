@@ -81,7 +81,7 @@ public extension Date {
 
     var time: String {
         let format = "HH:mm"
-        var formatter = DateFormatter()
+        let formatter = DateFormatter()
         formatter.locale = Locale.current
         formatter.dateFormat = format
         let string = formatter.string(from: Date.now)

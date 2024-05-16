@@ -1,4 +1,4 @@
-import OrderedCollections
+
 import os.log
 import SwiftUI
 ///
@@ -145,7 +145,7 @@ open class SwiftUILogger: ObservableObject {
     public let name: String?
 
     ///
-    @Published var filteredTags: OrderedSet<String>
+    @Published var filteredTags: Set<String>
 
     ///
     @Published public var logs: [Event]

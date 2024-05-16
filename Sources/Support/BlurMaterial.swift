@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftUIBackports
+
 
 struct BackdropBlurView<S: Shape>: ViewModifier {
     init(

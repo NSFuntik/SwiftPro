@@ -6,7 +6,6 @@
 //
 
 import Photos
-import SFSymbolEnum
 import SwiftUI
 
 let cameraUnavailable =

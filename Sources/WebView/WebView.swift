@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftUIBackports
 
 #if canImport(WebKit)
     import WebKit
@@ -12,8 +11,8 @@ import SwiftUIBackports
     #endif
 
     internal struct WebView: View {
-        @Environment(\.backportDismiss) private var dismiss
-        @Environment(\.backportOpenURL) private var openUrl
+        @Environment(\.dismiss) private var dismiss
+        @Environment(\.openURL) private var openUrl
         @Environment(\.self) private var environment
         @Binding var url: URL
 
@@ -31,14 +30,14 @@ import SwiftUIBackports
                         let controller = proxy.instance
                         controller.additionalSafeAreaInsets.bottom = height
                     }
-                    .backport.overlay(alignment: .bottom) {
+                    .overlay(alignment: .bottom) {
                         navigationBar
                     }
-                    .backport.scrollDismissesKeyboard(.immediately)
+                    .dismissKeyboardOnTappingOutside()
                     .ignoreKeyboard()
                     .navigationBarTitle(Text("Web View"), displayMode: .inline)
                     .toolbar {
-                        Backport.ToolbarItem(placement: .cancellationAction) {
+                        ToolbarItem(placement: .cancellationAction) {
                             Button("Close") { dismiss() }
                         }
                     }
@@ -111,7 +110,7 @@ import SwiftUIBackports
                     .foregroundColor(.primary)
                     .highlightEffect()
                 }
-                .backport.background {
+                .background {
                     GeometryReader { geo in
                         Capsule(style: .continuous)
                             .foregroundColor(.accentColor)
@@ -125,18 +124,19 @@ import SwiftUIBackports
                 Spacer(minLength: 0)
 
                 HStack(alignment: .firstTextBaseline, spacing: 30) {
-                    Backport.ShareLink(item: url) {
-                        Image(systemName: "square.and.arrow.up")
+                    if #available(iOS 16.0, *) {
+                        ShareLink(item: url) {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                        .highlightEffect()
                     }
-                    .highlightEffect()
-
                     Button {
                         openUrl(url)
                     } label: {
                         Image(systemName: "safari")
                     }
                     .highlightEffect()
-                    .environment(\.backportOpenURL, .init { _ in
+                    .environment(\.openURL, .init { _ in
                         .systemAction
                     })
                 }
@@ -144,14 +144,14 @@ import SwiftUIBackports
             .imageScale(.large)
             .padding(.vertical, 12)
             .padding(.horizontal)
-            .backport.background {
+            .background {
                 Rectangle()
                     .edgesIgnoringSafeArea(.all)
                     .onFrameChange { frame in
                         height = frame.height
                     }
                     .vibrantForeground()
-                    .backport.overlay(alignment: .top) {
+                    .overlay(alignment: .top) {
                         Divider()
                     }
             }
@@ -167,7 +167,7 @@ import SwiftUIBackports
             configuration.label
                 .padding(.horizontal, 8)
                 .padding(.vertical, 6)
-                .backport.background {
+                .background {
                     Capsule(style: .continuous)
                         .foregroundColor(.primary.opacity(configuration.isPressed ? 0.2 : 0.1))
                 }

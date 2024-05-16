@@ -70,7 +70,7 @@ internal struct FeedbackModifier<V: Equatable>: ViewModifier {
                 }
         } else {
             content
-                .backport.onChange(of: value) { value in
+                .onChange(of: value) { value in
                     Task { await feedback.perform() }
                 }
         }

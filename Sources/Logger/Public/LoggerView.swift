@@ -1,4 +1,3 @@
-import OrderedCollections
 import SwiftUI
 
 ///
@@ -9,8 +8,8 @@ public struct LoggerView: View {
     
     private var logs: [SwiftUILogger.Event] { logger.displayedLogs }
     
-    private var tags: OrderedSet<String> {
-        OrderedSet(
+    private var tags: Set<String> {
+        Set(
             logger.logs
                 .flatMap { $0.metadata.tags }
                 .map { $0.value }
