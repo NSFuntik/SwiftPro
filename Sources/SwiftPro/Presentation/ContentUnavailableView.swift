@@ -5,30 +5,36 @@
 //  Created by Dmitry Mikhaylov on 02.05.2024.
 //
 
+import Photos
 import SFSymbolEnum
 import SwiftUI
-import Photos
 
-#Preview(body: {
-    ContentUnavailableView("Camera not avaible",
-                           image: SFSymbol.questionmarkVideo.image,
-                           action: {
-        PHPhotoLibrary.requestAuthorization { status in
-            if status == .authorized {
-                DispatchQueue.main.async {
-                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+let cameraUnavailable =
+    ContentUnavailableView(
+        "Camera not avaible",
+        message: "Camera not avaible. Please go to Settings > \(String(describing: Bundle.main.infoDictionary?["CFBundleName"])) > Camera",
+        image: SFSymbol.questionmarkVideo.image,
+        action: {
+            PHPhotoLibrary.requestAuthorization { status in
+                if status == .authorized {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                    }
                 }
             }
         }
-    }
-        )
+    )
+
+#Preview(body: {
+    cameraUnavailable
 })
-//@available(iOS, introduced: 14.0, deprecated: 16.0, renamed: "ContentUnavailableView")
+// @available(iOS, introduced: 14.0, deprecated: 16.0, renamed: "ContentUnavailableView")
 public struct ContentUnavailableView<Content>: View where Content: View {
     let title: String
     let message: String
     let image: Image
     var content: (() -> Content)?
+    var actionTitle: String = "Retry"
     let action: (() -> Void)?
     @Environment(\.refresh) var refresh
     @Environment(\.dismiss) var dismiss
@@ -37,6 +43,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         _ title: String,
         message: String,
         image: Image,
+        actionTitle: String = "Retry",
         action: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> Content = { EmptyView() }
     ) {
@@ -44,18 +51,21 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         self.message = message
         self.image = image
         self.content = content
+        self.actionTitle = actionTitle
         self.action = action
     }
 
     public init(
         _ title: String,
         image: Image,
+        actionTitle: String = "Retry",
         action: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> Content = { EmptyView() }
     ) {
         self.title = title
         self.message = ""
         self.image = image
+        self.actionTitle = actionTitle
         self.content = content
         self.action = action
     }
@@ -63,12 +73,14 @@ public struct ContentUnavailableView<Content>: View where Content: View {
     public init(
         _ title: String,
         symbol: String,
+        actionTitle: String = "Retry",
         action: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> Content = { EmptyView() }
     ) {
         self.title = title
         self.message = ""
         self.image = Image(systemName: symbol)
+        self.actionTitle = actionTitle
         self.content = content
         self.action = action
     }
@@ -77,6 +89,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         _ title: String,
         symbol: SFSymbol,
         description: String,
+        actionTitle: String = "Retry",
         action: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> Content = { EmptyView() }
     ) {
@@ -84,6 +97,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         self.message = description
         self.image = symbol.image
         self.content = content
+        self.actionTitle = actionTitle
         self.action = action
     }
 
@@ -101,11 +115,11 @@ public struct ContentUnavailableView<Content>: View where Content: View {
             content?()
             if let _ = action {
                 AsyncButton(action: action ?? { await refresh?() ?? dismiss() }, label: {
-                    Label("Retry", symbol: .arrowClockwise)
-                    .padding(.horizontal)
+                    Label(.init(actionTitle), symbol: .arrowClockwise)
+                        .padding(.horizontal)
                         .font(.subheadline.bold().monospaced())
                         .hoverEffect()
-                    
+
                 }).padding().buttonStyle(.refresh).clipped()
             }
         }
@@ -136,7 +150,7 @@ struct ContentUnavailablePreview: View {
                 } else {
                     // Show search results or empty view
                     if searchResults.isEmpty {
-                        ContentUnavailableView("No Results", message: "Try a different search term", image: Image(systemName: "magnifyingglass"), content:  {
+                        ContentUnavailableView("No Results", message: "Try a different search term", image: Image(systemName: "magnifyingglass"), content: {
                             // Add any additional content or actions here
                             EmptyView()
                         })

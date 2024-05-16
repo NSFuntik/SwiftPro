@@ -36,20 +36,16 @@ public extension View {
 
 class CameraUtility {
     /// Checks if the device has a camera available.
-    static func isCameraAvailable() -> Bool {
-        return UIImagePickerController.isSourceTypeAvailable(.camera) && hasCameraPermission()
+    static func isCameraAvailable() async -> Bool {
+        guard await UIImagePickerController.isSourceTypeAvailable(.camera) else { return false }
+        return await hasCameraPermission()
     }
 
     /// Checks camera authorization status.
-    static func hasCameraPermission() -> Bool {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized: // The user has previously granted access to the camera.
-            return true
-        case .notDetermined, .denied, .restricted: // The user has not granted access or cannot grant access due to restrictions.
-            return false
-        @unknown default:
-            return false
-        }
+    static func hasCameraPermission() async -> Bool {
+        guard AVCaptureDevice.authorizationStatus(for: .video) == .authorized
+        else { return await AVCaptureDevice.requestAccess(for: .video) }
+        return true
     }
 }
 
@@ -99,9 +95,25 @@ public struct CameraView: View {
         .preferredColorScheme(.dark)
         .ignoresSafeArea()
         .statusBar(hidden: true)
+        .onAppear(perform: {
+            Task { @MainActor in
+                guard await !CameraUtility.isCameraAvailable() else { return }
+                cameraNotAutorizedAfterAppear = true
+            }
+        })
         .task {
             await handleCameraPreviews()
         }
+        .sheet(isPresented: $cameraNotAutorizedAfterAppear,
+               onDismiss: {
+                   Task { @MainActor in
+                       guard await CameraUtility.isCameraAvailable() else { dismiss(); return }
+                       cameraNotAutorizedAfterAppear = false
+                       await camera.start()
+                   }
+               }, content: {
+                   cameraUnavailable
+               })
         .onChange(of: authorizationStatus) { newValue in
             if newValue == .authorized {
                 Task { @MainActor in
@@ -110,6 +122,8 @@ public struct CameraView: View {
             }
         }
     }
+
+    @State var cameraNotAutorizedAfterAppear: Bool = false
 
     @ViewBuilder
     private func buttonsView() -> some View {
@@ -201,13 +215,14 @@ public struct CameraView: View {
     }
 
     func handleCameraPreviews() async {
-        guard CameraUtility.isCameraAvailable() else {
+        guard await CameraUtility.isCameraAvailable() else {
             debugPrint("Camera is not available.")
             viewfinderImage = Image(symbol: .pc)
                 .symbolRenderingMode(.multicolor)
                 .resizable(resizingMode: .stretch)
                 .interpolation(.high)
                 .renderingMode(.original)
+
             return
         }
         await camera.start()
