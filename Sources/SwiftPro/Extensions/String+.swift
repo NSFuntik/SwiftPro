@@ -16,23 +16,28 @@ public extension String {
 }
 
 public extension String {
-    
+    /// This is a shorthand for `trimmingCharacters(in:)`.
+    func trimmed(
+        for set: CharacterSet = .whitespacesAndNewlines
+    ) -> String {
+        self.trimmingCharacters(in: set)
+    }
+
     /// Check if this string has any content.
     var hasContent: Bool {
         !isEmpty
     }
-    
+
     /// Check if this string has any content after trimming.
     var hasTrimmedContent: Bool {
         !trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    
     /// Check if this string contains another string.
     func contains(_ string: String, caseSensitive: Bool) -> Bool {
         caseSensitive
-        ? contains(string)
-        : range(of: string, options: .caseInsensitive) != nil
+            ? contains(string)
+            : range(of: string, options: .caseInsensitive) != nil
     }
 }
 

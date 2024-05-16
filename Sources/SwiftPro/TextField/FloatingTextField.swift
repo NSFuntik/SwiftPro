@@ -54,8 +54,8 @@ public struct FloatingTextField: View {
     }
 }
 
-extension FloatingTextField {
-    public func onTextChange(_ onTextAction: ((_ oldValue: String, _ newValue: String) -> Void)?) -> Self {
+public extension FloatingTextField {
+    func onTextChange(_ onTextAction: ((_ oldValue: String, _ newValue: String) -> Void)?) -> Self {
         var view = self
         view.onTextAction = onTextAction
         return view

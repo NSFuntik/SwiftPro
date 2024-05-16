@@ -93,12 +93,12 @@ public extension View {
     func spacing() -> some View { modifier(Spacing()) }
 }
 
-@usableFromInline
-struct Spacing: ViewModifier {
+
+public struct Spacing: ViewModifier {
     @inlinable
     public init() { }
-    @ViewBuilder @usableFromInline
-    func body(content: Content) -> some View {
+    @ViewBuilder 
+    public func body(content: Content) -> some View {
         HStack {
             content
             Spacer()
@@ -106,8 +106,8 @@ struct Spacing: ViewModifier {
     }
 }
 
-extension Font {
-    public static func system(
+public extension Font {
+    static func system(
         _ style: Font.TextStyle = .body,
         _ design: Font.Design = .default,
         _ weight: Font.Weight = .regular
@@ -119,7 +119,7 @@ extension Font {
         }
     }
 
-    public static func system(
+    static func system(
         _ style: Font.TextStyle = .body,
         _ weight: Font.Weight = .regular
     ) -> Font {

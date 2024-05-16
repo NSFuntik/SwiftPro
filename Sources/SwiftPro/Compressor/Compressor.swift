@@ -42,12 +42,12 @@ public enum CompressionAlgorithm {
 }
 
 @available(iOS 9.0, OSX 10.11, watchOS 2.0, tvOS 9.0, *)
-extension Data {
+public extension Data {
     /**
      Returns a `Data` object created by compressing the receiver using the LZFSE algorithm.
      - returns: A `Data` object created by encoding the receiver's contents using the LZFSE algorithm.
      */
-    public func compress() throws -> Data {
+    func compress() throws -> Data {
         return /* try compress(algorithm: .lzfse, bufferSize: 8192) ?? */ self
     }
 
@@ -56,7 +56,7 @@ extension Data {
      - parameter algorithm: one of four compression algorithms to use during compression
      - returns: A `Data` object created by encoding the receiver's contents using the provided compression algorithm.
      */
-    public func compress(algorithm compression: CompressionAlgorithm) throws -> Data? {
+    func compress(algorithm compression: CompressionAlgorithm) throws -> Data? {
         return try compress(algorithm: compression, bufferSize: 4096)
     }
 
@@ -66,7 +66,7 @@ extension Data {
      - parameter bufferSize: the size of buffer in bytes to use during compression
      - returns: A `Data` object created by encoding the receiver's contents using the provided compression algorithm.
      */
-    public func compress(algorithm compression: CompressionAlgorithm, bufferSize: size_t) throws -> Data? {
+    func compress(algorithm compression: CompressionAlgorithm, bufferSize: size_t) throws -> Data? {
         return try compress(compression, operation: .compression, bufferSize: bufferSize)
     }
 
@@ -74,7 +74,7 @@ extension Data {
      Returns a `Data` object by uncompressing the receiver using the LZFSE algorithm.
      - returns: A `Data` object created by decoding the receiver's contents using the LZFSE algorithm.
      */
-    public func decompress() throws -> Data {
+    func decompress() throws -> Data {
         return try decompress(algorithm: .lzfse, bufferSize: 8192) ?? self
     }
 
@@ -83,7 +83,7 @@ extension Data {
      - parameter algorithm: one of four compression algorithms to use during decompression
      - returns: A `Data` object created by decoding the receiver's contents using the provided compression algorithm.
      */
-    public func decompress(algorithm compression: CompressionAlgorithm) throws -> Data? {
+    func decompress(algorithm compression: CompressionAlgorithm) throws -> Data? {
         return try decompress(algorithm: compression, bufferSize: 4096)
     }
 
@@ -93,7 +93,7 @@ extension Data {
      - parameter bufferSize: the size of buffer in bytes to use during decompression
      - returns: A `Data` object created by decoding the receiver's contents using the provided compression algorithm.
      */
-    public func decompress(algorithm compression: CompressionAlgorithm, bufferSize: size_t) throws -> Data? {
+    func decompress(algorithm compression: CompressionAlgorithm, bufferSize: size_t) throws -> Data? {
         return try compress(compression, operation: .decompression, bufferSize: bufferSize)
     }
 

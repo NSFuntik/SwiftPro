@@ -6,12 +6,12 @@
 //
 
 import SwiftUI
-extension ButtonStyle where Self == RefreshButtonStyle {
+public extension ButtonStyle where Self == RefreshButtonStyle {
     static var refresh: Self { .init() }
 }
 
-struct RefreshButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
+public struct RefreshButtonStyle: ButtonStyle {
+    public  func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(.horizontal, 8)
             .padding(.vertical, 6)

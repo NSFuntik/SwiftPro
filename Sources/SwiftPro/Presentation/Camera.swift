@@ -744,8 +744,8 @@ private enum TakePictureEnvironmentKey: EnvironmentKey {
     static var defaultValue: TakePictureAction = .init()
 }
 
-extension EnvironmentValues {
-    public internal(set) var takePicture: TakePictureAction {
+public extension EnvironmentValues {
+    internal(set) var takePicture: TakePictureAction {
         get { self[TakePictureEnvironmentKey.self] }
         set { self[TakePictureEnvironmentKey.self] = newValue }
     }

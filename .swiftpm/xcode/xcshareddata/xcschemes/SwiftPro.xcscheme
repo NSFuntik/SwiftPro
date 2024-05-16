@@ -34,16 +34,14 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      disableMainThreadChecker = "YES"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
+      enableGPUValidationMode = "1"
       allowLocationSimulation = "YES">
-      <PathRunnable
-         runnableDebuggingMode = "0"
-         FilePath = "/Users/nsfuntik/Library/Developer/Xcode/DerivedData/FlomniChatApp-flsfjlosavqjmdgsxapkkafyixew/Build/Products/Release-iphoneos/FlomniChatApp.app">
-      </PathRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

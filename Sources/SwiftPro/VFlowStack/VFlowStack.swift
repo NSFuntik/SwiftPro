@@ -189,7 +189,7 @@ public struct VFlowPositioning {
 }
 
 @available(iOS 16, tvOS 16, macOS 13, watchOS 9, *)
-private extension BidirectionalCollection where Element: BinaryFloatingPoint {
+public extension BidirectionalCollection where Element: BinaryFloatingPoint {
     func joined(spacing: Element) -> Element {
         let spaced = map { value in
             return value + spacing

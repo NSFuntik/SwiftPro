@@ -19,9 +19,9 @@ public extension View {
     }
 }
 
-struct Popup<PopupContent: View, Item: Hashable>: ViewModifier {
+public struct Popup<PopupContent: View, Item: Hashable>: ViewModifier {
     @ViewBuilder
-    func body(content: Content) -> some View {
+    public func body(content: Content) -> some View {
         content
             .overlay(alignment: alignment) {
                 Group {
@@ -53,7 +53,7 @@ struct Popup<PopupContent: View, Item: Hashable>: ViewModifier {
                                                     offset = 0
                                                 } else {
                                                     self.item = .none
-                                                    
+
                                                     offset = 0
                                                 }
                                             } else if alignment == .top {
@@ -82,15 +82,15 @@ struct Popup<PopupContent: View, Item: Hashable>: ViewModifier {
             .clipped()
             .background(.clear)
     }
-    
+
     @State var popup: (Item) -> PopupContent
     @Binding var item: Item?
-    
+
     @State private var offset: CGFloat = .zero
     @State private var size: CGSize = .zero
-    
+
     let alignment: Alignment
-    
+
     init(
         alignment: Alignment = .top,
         item: Binding<Item?>,
@@ -102,7 +102,7 @@ struct Popup<PopupContent: View, Item: Hashable>: ViewModifier {
     }
 }
 
-extension View {
+public extension View {
     func saveSize(in size: Binding<CGSize>) -> some View {
         modifier(SizeCalculator(size: size))
     }
@@ -115,10 +115,10 @@ extension View {
 ///
 /// - Parameters:
 ///   - size: A binding to a `CGSize` that will be updated with the size of the view.
-struct SizeCalculator: ViewModifier {
+public struct SizeCalculator: ViewModifier {
     @Binding var size: CGSize
-    
-    func body(content: Content) -> some View {
+
+    public func body(content: Content) -> some View {
         content
             .background(
                 GeometryReader { proxy in

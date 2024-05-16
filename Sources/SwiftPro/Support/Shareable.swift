@@ -43,13 +43,13 @@ import Foundation
         }
     }
 
-    extension URL {
+    public extension URL {
         public var itemProvider: NSItemProvider? {
             .init(contentsOf: self)
         }
     }
 
-    extension Image {
+    public extension Image {
         public var pathExtension: String { "jpg" }
         public var itemProvider: NSItemProvider? {
             do {
@@ -72,7 +72,7 @@ import Foundation
         }
     }
 
-    extension UIImage {
+    public extension UIImage {
         public var pathExtension: String { "jpg" }
         public var itemProvider: NSItemProvider? {
             do {

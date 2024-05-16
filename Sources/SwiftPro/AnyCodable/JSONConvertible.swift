@@ -42,13 +42,13 @@ public protocol JSONConvertibleDictionary {
 }
 
 extension Array: JSONConvertibleCollection {
-    var jsonConvertibleObjects: [Any] {
+    public var jsonConvertibleObjects: [Any] {
         return self.map { jsonConvertibleObject($0) }
     }
 }
 
 extension Set: JSONConvertibleCollection {
-    var jsonConvertibleObjects: [Any] {
+    public var jsonConvertibleObjects: [Any] {
         return self.map { jsonConvertibleObject($0) }
     }
 }
@@ -63,7 +63,7 @@ extension Dictionary: JSONConvertibleDictionary {
         return dict
     }
 
-    var jsonElements: [String: Optional<Any>] {
+    public var jsonElements: [String: Optional<Any>] {
         var dict: [String: Any] = [:]
         for (key, value) in self {
             dict[String(describing: key)] = jsonConvertibleObject(value)
@@ -150,7 +150,7 @@ public extension ReflectedStringConvertible {
     }
 }
 
-extension Mirror {
+public extension Mirror {
     /// The children of the mirror and its superclasses.
     var allChildren: [Mirror.Child] {
         var children = Array(self.children)
@@ -168,16 +168,16 @@ extension Mirror {
 
 // Inspired by https://gist.github.com/mbuchetics/c9bc6c22033014aa0c550d3b4324411a
 
-struct JSONCodingKeys: CodingKey {
-    var stringValue: String
+public struct JSONCodingKeys: CodingKey {
+    public var stringValue: String
 
-    init?(stringValue: String) {
+    public init?(stringValue: String) {
         self.stringValue = stringValue
     }
 
-    var intValue: Int?
+    public var intValue: Int?
 
-    init?(intValue: Int) {
+    public init?(intValue: Int) {
         self.init(stringValue: "\(intValue)")
         self.intValue = intValue
     }

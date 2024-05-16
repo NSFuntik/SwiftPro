@@ -40,7 +40,7 @@ import AppKit
 public typealias Image = NSImage
 #endif
 
-func unwrapOrThrow<T>(_ optional: T?, _ error: Error) throws -> T {
+public func unwrapOrThrow<T>(_ optional: T?, _ error: Error) throws -> T {
     if let value = optional {
         return value
     } else {
@@ -48,7 +48,7 @@ func unwrapOrThrow<T>(_ optional: T?, _ error: Error) throws -> T {
     }
 }
 
-extension Bool {
+public extension Bool {
     func trueOrThrow(_ error: Error) throws {
         if !self {
             throw error
@@ -78,7 +78,7 @@ public struct TypeWrapper<T: Codable>: Codable {
     }
 }
 
-class Utils {
+public  class Utils {
     static func image(data: Data) -> UIImage? {
 #if canImport(UIKit)
         return UIImage(data: data)

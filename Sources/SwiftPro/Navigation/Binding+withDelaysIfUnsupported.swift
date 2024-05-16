@@ -88,7 +88,7 @@ public extension Binding where Value == NBNavigationPath {
   }
 }
 
-extension Binding {
+public extension Binding {
   @MainActor
   func withDelaysIfUnsupported<Screen>(from start: [Screen], to end: [Screen], keyPath: WritableKeyPath<Value, [Screen]>) async {
     let steps = NavigationBackport.calculateSteps(from: start, to: end)
