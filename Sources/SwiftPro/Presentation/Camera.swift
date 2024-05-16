@@ -39,7 +39,7 @@ class CameraUtility {
     static func isCameraAvailable() -> Bool {
         return UIImagePickerController.isSourceTypeAvailable(.camera) && hasCameraPermission()
     }
-    
+
     /// Checks camera authorization status.
     static func hasCameraPermission() -> Bool {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -62,16 +62,16 @@ public struct CameraView: View {
     @State var capturedImage: UIImage? = nil
     @State private var authorizationStatus: AVAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
     @State private var outputSize: CGSize = .zero
-    
+
     private let options: CameraViewOptions = CameraViewOptions()
     private let barHeightFactor = 0.15
     public init(_ outputImage: Binding<UIImage?>) {
         _outputImage = outputImage
         UIApplication.shared.keyWindow?.rootViewController?.view.backgroundColor = .clear
     }
-    
+
     //    @State private var showsTakePictureFeedback: Bool = false
-    
+
     public var body: some View {
         GeometryReader { geometry in
             ViewfinderView(image: $viewfinderImage)
@@ -84,7 +84,7 @@ public struct CameraView: View {
         .vibrantForeground()
         .environment(\.takePicture, TakePictureAction {
             //            showsTakePictureFeedback = true
-            
+
             guard let capturedPhoto = try? await camera.takePhoto(),
                   let image = UIImage(photo: capturedPhoto)
             else { return }
@@ -94,7 +94,7 @@ public struct CameraView: View {
                     viewfinderImage = Image(uiImage: capturedImage)
                 }
             }
-            
+
         })
         .preferredColorScheme(.dark)
         .ignoresSafeArea()
@@ -110,7 +110,7 @@ public struct CameraView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func buttonsView() -> some View {
         LazyVGrid(columns: .init(repeating: .init(.adaptive(minimum: .screenWidth / 4, maximum: .screenWidth / 2), alignment: .center), count: 3)) {
@@ -126,7 +126,7 @@ public struct CameraView: View {
                 }
                 .labelStyle(.cameraControl(tint: .bar, size: 14.88))
             }
-            
+
             if capturedImage != nil {
                 Button {
                     withAnimation {
@@ -149,10 +149,10 @@ public struct CameraView: View {
                         do {
                             //                            $showsTakePictureFeedback.wrappedValue = true
                             let capturePhoto = try await camera.takePhoto()
-                            
+
                             withFeedback(
                                 .flash(Color.white.opacity(0.88), duration: 0.1488)
-                                .combined(with: .haptic(.impact))
+                                    .combined(with: .haptic(.impact))
                             ) {
                                 camera.stop()
                             }
@@ -174,7 +174,7 @@ public struct CameraView: View {
                     .labelStyle(.cameraControl(tint: .background.opacity(0.44), size: 18))
                 }
             }
-            
+
             Button {
                 if capturedImage != nil {
                     capturedImage = nil
@@ -199,7 +199,7 @@ public struct CameraView: View {
         .padding()
         .animation(.bouncy, value: capturedImage)
     }
-    
+
     func handleCameraPreviews() async {
         guard CameraUtility.isCameraAvailable() else {
             debugPrint("Camera is not available.")
@@ -211,17 +211,17 @@ public struct CameraView: View {
             return
         }
         await camera.start()
-        
+
         let imageStream = camera.previewStream
             .map { $0.image }
-        
+
         for await image in imageStream {
             Task { @MainActor in
                 viewfinderImage = image
             }
         }
     }
-    
+
     struct ViewfinderView: View {
         @Binding var image: Image?
         //        @Binding var showsTakePictureFeedback: Bool
@@ -237,13 +237,13 @@ public struct CameraView: View {
             }.background(.clear)
         }
     }
-    
+
     public struct CameraViewOptions {
         public init(automaticallyRequestAuthorization: Bool = true, isTakePictureFeedbackEnabled: Bool = true) {
             self.automaticallyRequestAuthorization = automaticallyRequestAuthorization
             self.isTakePictureFeedbackEnabled = isTakePictureFeedbackEnabled
         }
-        
+
         public private(set) static var `default` = CameraViewOptions()
         var automaticallyRequestAuthorization: Bool = true
         var isTakePictureFeedbackEnabled: Bool = true
@@ -263,7 +263,7 @@ struct CameraContolLabelStyle<S>: LabelStyle where S: ShapeStyle {
         self.tint = tint
         self.size = size
     }
-    
+
     func makeBody(configuration: Configuration) -> some View where S: ShapeStyle {
         Label {
             configuration.title.hidden()
@@ -288,11 +288,11 @@ extension Label where Title == Text, Icon == Image {
     }
 }
 
-// Example dimensions assuming a square video frame for simplicity
-let pixels = 5000000 // Total pixels from calculation
-let dimension = Int32(sqrt(Double(pixels))) // Calculate dimension for a square
-
-let videoDimensions = CMVideoDimensions(width: dimension, height: dimension)
+//// Example dimensions assuming a square video frame for simplicity
+// let pixels = 5000000 // Total pixels from calculation
+// let dimension = Int32(sqrt(Double(pixels))) // Calculate dimension for a square
+//
+////let videoDimensions = CMVideoFormatDescriptionGetDimensions(.)(width: dimension, height: dimension)
 
 public class Camera: NSObject {
     private let captureSession = AVCaptureSession()
@@ -302,42 +302,42 @@ public class Camera: NSObject {
     private var videoOutput: AVCaptureVideoDataOutput?
     private var sessionQueue: DispatchQueue!
     private var didTakePicture: ((Result<AVCapturePhoto, Error>) -> Void)?
-    
+
     private var allCaptureDevices: [AVCaptureDevice] {
         AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInTrueDepthCamera, .builtInDualCamera, .builtInDualWideCamera, .builtInWideAngleCamera, .builtInDualWideCamera], mediaType: .video, position: .unspecified).devices
     }
-    
+
     private var frontCaptureDevices: [AVCaptureDevice] {
         allCaptureDevices
             .filter { $0.position == .front }
     }
-    
+
     private var backCaptureDevices: [AVCaptureDevice] {
         allCaptureDevices
             .filter { $0.position == .back }
     }
-    
+
     private var captureDevices: [AVCaptureDevice] {
         var devices = [AVCaptureDevice]()
-#if os(macOS) || (os(iOS) && targetEnvironment(macCatalyst))
-        devices += allCaptureDevices
-#else
-        if let backDevice = backCaptureDevices.first {
-            devices += [backDevice]
-        }
-        if let frontDevice = frontCaptureDevices.first {
-            devices += [frontDevice]
-        }
-#endif
+        #if os(macOS) || (os(iOS) && targetEnvironment(macCatalyst))
+            devices += allCaptureDevices
+        #else
+            if let backDevice = backCaptureDevices.first {
+                devices += [backDevice]
+            }
+            if let frontDevice = frontCaptureDevices.first {
+                devices += [frontDevice]
+            }
+        #endif
         return devices
     }
-    
+
     private var availableCaptureDevices: [AVCaptureDevice] {
         captureDevices
             .filter({ $0.isConnected })
             .filter({ !$0.isSuspended })
     }
-    
+
     private var captureDevice: AVCaptureDevice? {
         didSet {
             guard let captureDevice = captureDevice else { return }
@@ -347,27 +347,27 @@ public class Camera: NSObject {
             }
         }
     }
-    
+
     var isRunning: Bool {
         captureSession.isRunning
     }
-    
+
     var isUsingFrontCaptureDevice: Bool {
         guard let captureDevice = captureDevice else { return false }
         return frontCaptureDevices.contains(captureDevice)
     }
-    
+
     var isUsingBackCaptureDevice: Bool {
         guard let captureDevice = captureDevice else { return false }
         return backCaptureDevices.contains(captureDevice)
     }
-    
+
     private var addToPhotoStream: ((AVCapturePhoto) -> Void)?
-    
+
     private var addToPreviewStream: ((CIImage) -> Void)?
-    
+
     var isPreviewPaused = false
-    
+
     lazy var previewStream: AsyncStream<CIImage> = {
         AsyncStream { continuation in
             addToPreviewStream = { ciImage in
@@ -377,7 +377,7 @@ public class Camera: NSObject {
             }
         }
     }()
-    
+
     lazy var photoStream: AsyncStream<AVCapturePhoto> = {
         AsyncStream { continuation in
             addToPhotoStream = { photo in
@@ -385,31 +385,31 @@ public class Camera: NSObject {
             }
         }
     }()
-    
+
     @usableFromInline override init() {
         super.init()
         initialize()
     }
-    
+
     private func initialize() {
         sessionQueue = DispatchQueue(label: "session queue")
-        
+
         captureDevice = availableCaptureDevices.first ?? AVCaptureDevice.default(for: .video)
-        
+
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         NotificationCenter.default.addObserver(self, selector: #selector(updateForDeviceOrientation), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
-    
+
     private func configureCaptureSession(completionHandler: (_ success: Bool) -> Void) {
         var success = false
-        
+
         self.captureSession.beginConfiguration()
-        
+
         defer {
             self.captureSession.commitConfiguration()
             completionHandler(success)
         }
-        
+
         guard
             let captureDevice = captureDevice,
             let deviceInput = try? AVCaptureDeviceInput(device: captureDevice)
@@ -417,14 +417,14 @@ public class Camera: NSObject {
             logger.error("Failed to obtain video input.")
             return
         }
-        
+
         let photoOutput = AVCapturePhotoOutput()
-        
+
         captureSession.sessionPreset = AVCaptureSession.Preset.photo
-        
+
         let videoOutput = AVCaptureVideoDataOutput()
         videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "VideoDataOutputQueue"))
-        
+
         guard captureSession.canAddInput(deviceInput) else {
             logger.error("Unable to add device input to capture session.")
             return
@@ -437,29 +437,30 @@ public class Camera: NSObject {
             logger.error("Unable to add video output to capture session.")
             return
         }
-        
+
         captureSession.addInput(deviceInput)
         captureSession.addOutput(photoOutput)
         captureSession.addOutput(videoOutput)
-        
+
         self.deviceInput = deviceInput
         self.photoOutput = photoOutput
         self.videoOutput = videoOutput
-        if #available(macOS 10.15, iOS 16.0, tvOS 16.0, *) {
-            photoOutput.maxPhotoDimensions = videoDimensions
-        } else {
-            photoOutput.maxPhotoQualityPrioritization = .speed
-            photoOutput.isHighResolutionCaptureEnabled = false
-        }
         photoOutput.maxPhotoQualityPrioritization = .speed
-        
+        photoOutput.isHighResolutionCaptureEnabled = false
+
+        if #available(macOS 10.15, iOS 16.0, tvOS 16.0, *) {
+            if let dimention = deviceInput.device.activeFormat.supportedMaxPhotoDimensions.sorted(by: { ($0.width * $0.height) < ($1.width * $1.height) }).first {
+                photoOutput.maxPhotoDimensions = dimention
+            }
+        }
+
         updateVideoOutputConnection()
-        
+
         isCaptureSessionConfigured = true
-        
+
         success = true
     }
-    
+
     private func checkAuthorization() async -> Bool {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -481,7 +482,7 @@ public class Camera: NSObject {
             return false
         }
     }
-    
+
     private func deviceInputFor(device: AVCaptureDevice?) -> AVCaptureDeviceInput? {
         guard let validDevice = device else { return nil }
         do {
@@ -491,28 +492,28 @@ public class Camera: NSObject {
             return nil
         }
     }
-    
+
     private func updateSessionForCaptureDevice(_ captureDevice: AVCaptureDevice) {
         guard isCaptureSessionConfigured else { return }
-        
+
         captureSession.beginConfiguration()
         defer { captureSession.commitConfiguration() }
-        
+
         for input in captureSession.inputs {
             if let deviceInput = input as? AVCaptureDeviceInput {
                 captureSession.removeInput(deviceInput)
             }
         }
-        
+
         if let deviceInput = deviceInputFor(device: captureDevice) {
             if !captureSession.inputs.contains(deviceInput), captureSession.canAddInput(deviceInput) {
                 captureSession.addInput(deviceInput)
             }
         }
-        
+
         updateVideoOutputConnection()
     }
-    
+
     private func updateVideoOutputConnection() {
         if let videoOutput = videoOutput,
            let videoOutputConnection = videoOutput.connection(with: .video) {
@@ -521,14 +522,14 @@ public class Camera: NSObject {
             }
         }
     }
-    
+
     func start() async {
         let authorized = await checkAuthorization()
         guard authorized else {
             logger.error("Camera access was not authorized.")
             return
         }
-        
+
         if isCaptureSessionConfigured {
             if !captureSession.isRunning {
                 sessionQueue.async { [self] in
@@ -537,7 +538,7 @@ public class Camera: NSObject {
             }
             return
         }
-        
+
         sessionQueue.async { [self] in
             self.configureCaptureSession { success in
                 guard success else { return }
@@ -545,17 +546,17 @@ public class Camera: NSObject {
             }
         }
     }
-    
+
     func stop() {
         guard isCaptureSessionConfigured else { return }
-        
+
         if captureSession.isRunning {
             sessionQueue.async {
                 self.captureSession.stopRunning()
             }
         }
     }
-    
+
     func switchCaptureDevice() {
         if let captureDevice = captureDevice, let index = availableCaptureDevices.firstIndex(of: captureDevice) {
             let nextIndex = (index + 1) % availableCaptureDevices.count
@@ -564,7 +565,7 @@ public class Camera: NSObject {
             self.captureDevice = AVCaptureDevice.default(for: .video)
         }
     }
-    
+
     private var deviceOrientation: UIDeviceOrientation {
         var orientation = UIDevice.current.orientation
         if orientation == UIDeviceOrientation.unknown {
@@ -572,12 +573,12 @@ public class Camera: NSObject {
         }
         return orientation
     }
-    
+
     @objc
     func updateForDeviceOrientation() {
         // TODO: Figure out if we need this for anything.
     }
-    
+
     private func videoOrientationFor(_ deviceOrientation: UIDeviceOrientation) -> AVCaptureVideoOrientation? {
         switch deviceOrientation {
         case .portrait: return AVCaptureVideoOrientation.portrait
@@ -587,42 +588,41 @@ public class Camera: NSObject {
         default: return nil
         }
     }
-    
+
     func takePhoto() async throws -> AVCapturePhoto {
         guard let photoOutput = photoOutput else { throw CameraError.missingPhotoOutput }
         defer { didTakePicture = nil }
-        
-        var photoSettings = AVCapturePhotoSettings()
-        
-        if photoOutput.availablePhotoCodecTypes.contains(.hevc) {
-            photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
-        }
-        
-        let isFlashAvailable = self.deviceInput?.device.isFlashAvailable ?? false
-        photoSettings.flashMode = isFlashAvailable ? .auto : .off
-        
-        if #available(macOS 10.15, iOS 16.0, tvOS 16.0, *) {
-            photoSettings.maxPhotoDimensions = videoDimensions
-        } else {
-            photoSettings.isHighResolutionPhotoEnabled = false
-        }
-        photoOutput.maxPhotoQualityPrioritization = .speed
-        if let previewPhotoPixelFormatType = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
-            photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewPhotoPixelFormatType]
-        }
-        photoSettings.photoQualityPrioritization = .speed
-        
-        if let photoOutputVideoConnection = photoOutput.connection(with: .video) {
-            if photoOutputVideoConnection.isVideoOrientationSupported,
-               let videoOrientation = self.videoOrientationFor(self.deviceOrientation) {
-                photoOutputVideoConnection.videoOrientation = videoOrientation
-            }
-        }
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             didTakePicture = { continuation.resume(with: $0) }
             sessionQueue.async {
-                let photoSettings = photoOutput.photoSettings()
+                var photoSettings = AVCapturePhotoSettings()
+
+                if photoOutput.availablePhotoCodecTypes.contains(.hevc) {
+                    photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
+                }
+
+                let isFlashAvailable = self.deviceInput?.device.isFlashAvailable ?? false
+                photoSettings.flashMode = isFlashAvailable ? .auto : .off
+
+                photoSettings.isHighResolutionPhotoEnabled = false
+                photoOutput.maxPhotoQualityPrioritization = .speed
+                if #available(macOS 10.15, iOS 16.0, tvOS 16.0, *) {
+                    if let dimention = self.deviceInput?.device.activeFormat.supportedMaxPhotoDimensions.sorted(by: { ($0.width * $0.height) < ($1.width * $1.height) }).first {
+                        photoSettings.maxPhotoDimensions = dimention
+                    }
+                }
+                if let previewPhotoPixelFormatType = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
+                    photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewPhotoPixelFormatType]
+                }
+                photoSettings.photoQualityPrioritization = .speed
+
+                if let photoOutputVideoConnection = photoOutput.connection(with: .video) {
+                    if photoOutputVideoConnection.isVideoOrientationSupported,
+                       let videoOrientation = self.videoOrientationFor(self.deviceOrientation) {
+                        photoOutputVideoConnection.videoOrientation = videoOrientation
+                    }
+                }
                 photoOutput.capturePhoto(with: photoSettings, delegate: self)
             }
         }
@@ -635,7 +635,7 @@ extension Camera: AVCapturePhotoCaptureDelegate {
             logger.error("Error capturing photo: \(error.localizedDescription)")
             return
         }
-        
+
         addToPhotoStream?(photo)
     }
 }
@@ -643,12 +643,12 @@ extension Camera: AVCapturePhotoCaptureDelegate {
 extension Camera: AVCaptureVideoDataOutputSampleBufferDelegate {
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = sampleBuffer.imageBuffer else { return }
-        
+
         if connection.isVideoOrientationSupported,
            let videoOrientation = videoOrientationFor(deviceOrientation) {
             connection.videoOrientation = videoOrientation
         }
-        
+
         addToPreviewStream?(CIImage(cvPixelBuffer: pixelBuffer))
     }
 }
@@ -687,7 +687,7 @@ public extension CIImage {
     var image: Image? {
         let ciContext = CIContext()
         guard let cgImage = ciContext.createCGImage(self, from: extent) else { return nil }
-        
+
         return Image(decorative: cgImage, scale: 0.5, orientation: .up)
     }
 }
@@ -711,7 +711,7 @@ public struct TakePictureAction {
     var handler: () async -> Void = {
         assertionFailure("@Environment(\\.takePicture) must be accessed from a camera overlay view")
     }
-    
+
     public func callAsFunction() {
         Task { await handler() }
     }
@@ -725,29 +725,5 @@ extension EnvironmentValues {
     public internal(set) var takePicture: TakePictureAction {
         get { self[TakePictureEnvironmentKey.self] }
         set { self[TakePictureEnvironmentKey.self] = newValue }
-    }
-}
-
-extension AVCapturePhotoOutput {
-    func photoSettings() -> AVCapturePhotoSettings {
-        let photoSettings: AVCapturePhotoSettings
-        
-        if availablePhotoCodecTypes.contains(.jpeg) {
-            photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
-        } else {
-            photoSettings = AVCapturePhotoSettings()
-            if #available(macOS 10.15, iOS 16.0, tvOS 16.0, *) {
-                photoSettings.maxPhotoDimensions = videoDimensions
-            } else {
-                photoSettings.isHighResolutionPhotoEnabled = false
-            }        }
-        
-        photoSettings.photoQualityPrioritization = .speed
-        if let pixelFormatType = photoSettings.availablePreviewPhotoPixelFormatTypes.first {
-            photoSettings.previewPhotoFormat = [
-                String(kCVPixelBufferPixelFormatTypeKey): pixelFormatType,
-            ]
-        }
-        return photoSettings
     }
 }
