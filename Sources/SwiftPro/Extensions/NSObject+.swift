@@ -79,7 +79,7 @@ public struct TypeWrapper<T: Codable>: Codable {
 }
 
 public  class Utils {
-    static func image(data: Data) -> UIImage? {
+    public static func image(data: Data) -> UIImage? {
 #if canImport(UIKit)
         return UIImage(data: data)
 #elseif canImport(AppKit)
@@ -89,7 +89,7 @@ public  class Utils {
 #endif
     }
     
-    static func data(image: UIImage) -> Data? {
+    public static func data(image: UIImage) -> Data? {
 #if canImport(UIKit)
         return image.jpegData(compressionQuality: 0.9)
 #elseif canImport(AppKit)
@@ -105,6 +105,18 @@ public struct File {
     public let url: URL
     public let modificationDate: Date?
     public let size: UInt64?
+    
+   public init(
+        name: String,
+        url: URL,
+        modificationDate: Date?,
+        size: UInt64?
+    ) {
+        self.name = name
+        self.url = url
+        self.modificationDate = modificationDate
+        self.size = size
+    }
 }
 
 public extension File {

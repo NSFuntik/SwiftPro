@@ -92,7 +92,12 @@ public extension RangeReplaceableCollection where Element: Identifiable & Equata
     }
 }
 
-extension RangeReplaceableCollection where Index: Hashable {
+public extension RangeReplaceableCollection where Index: Hashable {
+    /// Check if this string has any content.
+    var hasContent: Bool {
+        !isEmpty
+    }
+
     public mutating func removeAll<C>(at collection: C) -> Self where
         C: Collection,
         C.Element == Index {
@@ -187,16 +192,14 @@ public extension Dictionary where Value == Value {
     }
 }
 
-public extension Dictionary where Value == Optional<Any> {
-}
+public extension Dictionary where Value == Optional<Any> {}
 
 public extension ComparisonResult {
-    
-    /// This is a shorthand for `.orderedAscending`.
+    /// This is a shorthand for `.ordered Ascending`.
     static var ascending: ComparisonResult {
         .orderedAscending
     }
-    
+
     /// This is a shorthand for `.orderedDescending`.
     static var descending: ComparisonResult {
         .orderedDescending

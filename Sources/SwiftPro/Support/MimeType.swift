@@ -38,7 +38,7 @@ public enum MIMEType: Identifiable, CaseIterable, RawRepresentable {
     public typealias RawValue = String
 
     public init?(rawValue: String) {
-        guard let this = (try? MIMEType.type(for: rawValue))
+        guard let this = (try? MIMEType.from(pathExtension: rawValue))
         else { return nil }
         self = this
     }
@@ -68,7 +68,6 @@ public enum MIMEType: Identifiable, CaseIterable, RawRepresentable {
         text(Text),
         video(Video)
 
-    public var identifier: String { id }
 
     public var id: String {
         switch self {
@@ -212,7 +211,7 @@ public enum MIMEType: Identifiable, CaseIterable, RawRepresentable {
         }
     }
 
-    public static func type(for pathExtension: String) throws -> MIMEType {
+    public static func from(pathExtension: String) throws -> MIMEType {
         let pathExtension = pathExtension.lowercased()
         let type = MIMEType.allCases.first(where: { $0.rawValue == pathExtension || $0.id == pathExtension })
 

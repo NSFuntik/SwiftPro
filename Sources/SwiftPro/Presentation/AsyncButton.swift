@@ -43,7 +43,7 @@ public struct AsyncButton<Label: View, Trigger: Equatable>: View {
         }
         .disabled(isRunning)
         .opacity(isRunning ? 0.5 : 1)
-        .shimmering(active: isRunning, animation: .spring)
+        .shimmering(active: isRunning, animation: .interactiveSpring)
         .onChange(of: cancellation) { _ in
             task?.cancel()
         }

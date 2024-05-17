@@ -93,11 +93,10 @@ public extension View {
     func spacing() -> some View { modifier(Spacing()) }
 }
 
-
 public struct Spacing: ViewModifier {
     @inlinable
     public init() { }
-    @ViewBuilder 
+    @ViewBuilder
     public func body(content: Content) -> some View {
         HStack {
             content
@@ -190,9 +189,18 @@ public extension UIColor {
     }
 }
 
+extension Color {
+    @inlinable
+    public static func adaptiveColor(withSeed seed: String) -> Color {
+        Color(UIColor.adaptiveColor(withSeed: seed))
+    }
 
+    public init(adaptWithSeed: String) {
+        self.init(UIColor.adaptiveColor(withSeed: adaptWithSeed))
+    }
 
-
+  
+}
 
 public extension View {
     @ViewBuilder
@@ -204,7 +212,7 @@ public extension View {
             hoverEffect(.highlight)
         }
     }
-    
+
     @ViewBuilder
     func ignoreKeyboard() -> some View {
         if #available(iOS 14, *) {
@@ -213,7 +221,7 @@ public extension View {
             self
         }
     }
-    
+
     @ViewBuilder
     func vibrantForeground(thick: Bool = false) -> some View {
         if #available(iOS 15, *) {
