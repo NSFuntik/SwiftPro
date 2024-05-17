@@ -98,7 +98,7 @@ public extension RangeReplaceableCollection where Index: Hashable {
         !isEmpty
     }
 
-    public mutating func removeAll<C>(at collection: C) -> Self where
+    mutating func removeAll<C>(at collection: C) -> Self where
         C: Collection,
         C.Element == Index {
         let indices = Set(collection)

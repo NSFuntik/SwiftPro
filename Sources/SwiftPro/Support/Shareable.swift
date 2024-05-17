@@ -44,14 +44,14 @@ import Foundation
     }
 
     public extension URL {
-        public var itemProvider: NSItemProvider? {
+        var itemProvider: NSItemProvider? {
             .init(contentsOf: self)
         }
     }
 
     public extension Image {
-        public var pathExtension: String { "jpg" }
-        public var itemProvider: NSItemProvider? {
+        var pathExtension: String { "jpg" }
+        var itemProvider: NSItemProvider? {
             do {
                 let url = URL(fileURLWithPath: NSTemporaryDirectory())
                     .appendingPathComponent("\(UUID().uuidString)")
@@ -73,8 +73,8 @@ import Foundation
     }
 
     public extension UIImage {
-        public var pathExtension: String { "jpg" }
-        public var itemProvider: NSItemProvider? {
+        var pathExtension: String { "jpg" }
+        var itemProvider: NSItemProvider? {
             do {
                 let url = URL(fileURLWithPath: NSTemporaryDirectory())
                     .appendingPathComponent("\(UUID().uuidString)")
