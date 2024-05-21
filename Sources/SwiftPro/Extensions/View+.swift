@@ -90,14 +90,14 @@ public extension View {
     }
 
     @inlinable
-    func spacing() -> some View { modifier(Spacing()) }
+    func spacing() -> some View { HStack { self; Spacer() } }
+    
+    
 }
-
-public struct Spacing: ViewModifier {
-    @inlinable
-    public init() { }
+struct Spacing: ViewModifier {
+    @inlinable init() { }
     @ViewBuilder
-    public func body(content: Content) -> some View {
+    func body(content: Content) -> some View {
         HStack {
             content
             Spacer()

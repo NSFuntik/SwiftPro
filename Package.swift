@@ -10,9 +10,8 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "SwiftPro",
-            targets: ["SwiftPro", ]
-        ),
+            name: "SwiftPro", /*type: .dynamic,*/
+            targets: ["SwiftPro"]),
     ],
     dependencies: [
         .package(url: "https://github.com/hmlongco/Factory.git", branch: "main"),
@@ -27,6 +26,8 @@ let package = Package(
             ],
             resources: [
                 .process("Resources/Media.xcassets"),
-            ])
+            ]
+//            , swiftSettings: [ .unsafeFlags(["-enable-library-evolution"]) ]
+        )
     ]
 )
