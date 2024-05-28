@@ -5,22 +5,19 @@
 //  Created by Dmitry Mikhaylov on 25.05.2024.
 //
 
-
+import Factory
 import Foundation
 import NaturalLanguage
-
 extension SharedContainer {
     public var symbolFinder: Factory<MLSymbolFinder> { self { .default }.singleton }
 }
 
-/// ### Основные изменения:
+/// ### Основные функции:
 /// 1. **Сохранение кэша на диск**: Метод `saveCacheToDisk` используется для сериализации эмбеддингов и сохранения их на диск.
 /// 2. **Загрузка кэша с диска**: Метод `loadCacheFromDisk` используется для десериализации эмбеддингов при запуске приложения.
 /// 3. **Инициализация эмбеддингов и BK-Tree**: Инициализация эмбеддингов и BK-Tree происходит только если загрузка кэша с диска не удалась.
 /// 4. **Кодирование и декодирование**: Для сохранения и загрузки данных на диск используется `PropertyListEncoder` и `PropertyListDecoder`.
 public final class MLSymbolFinder {
-    @Injected(\LogContainer.global) var log
-
     // Singleton instance
     public static let `default` = MLSymbolFinder()
 
@@ -34,12 +31,10 @@ public final class MLSymbolFinder {
         let fileManager = FileManager.default
         let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
         cacheFileURL = urls[0].appendingPathComponent("symbolEmbeddingsCache.plist")
-        
+
         debugPrint("Инициализация MLSymbolFinder...")
         // Асинхронная инициализация эмбеддингов и BK-Tree для всех символов SFSymbol
-        DispatchQueue.global(qos: .utility).async {
-            self.initialize()
-        }
+        DispatchQueue.global(qos: .utility).async { self.initialize() }
     }
 
     public func initialize() {
@@ -52,13 +47,14 @@ public final class MLSymbolFinder {
         }
     }
 
+    /// Инициализация эмбеддингов и BK-Tree...
     private func initializeEmbeddingsAndBKTree() {
         let allSymbols = SFSymbol.allCases.map { $0.rawValue.replacingOccurrences(of: ".", with: " ") }
         let group = DispatchGroup()
 
-//        debugPrint("Инициализация эмбеддингов и BK-Tree...")
+        debugPrint("Инициализация эмбеддингов и BK-Tree...")
         // Асинхронная инициализация эмбеддингов и BK-Tree для всех символов
-        
+
         for symbol in allSymbols {
             group.enter()
             DispatchQueue.global(qos: .utility).async {
@@ -112,26 +108,26 @@ public final class MLSymbolFinder {
 
     public func findMostSimilarSymbol(to input: String) -> SFSymbol? {
         let input = input.lowercased()
-//        log.info("Поиск наиболее похожего символа для: \(input)")
+        debugPrint("Поиск наиболее похожего символа для: \(input)")
 
         // Проверка на точное соответствие
         if let exactMatch = SFSymbol(rawValue: input) {
-            log.info("Найден точный символ: \(input)")
+            debugPrint("Найден точный символ: \(input)")
             return exactMatch
         }
 
         guard let result = findMostSimilarSymbolInternal(to: input.replacingOccurrences(of: ".", with: " ")) else {
             return nil
         }
-        log.info("Найден похожий символ: \(result)")
+        debugPrint("Найден похожий символ: \(result)")
         return SFSymbol(rawValue: result.replacingOccurrences(of: " ", with: "."))
     }
 
     private func findMostSimilarSymbolInternal(to input: String) -> String? {
-//        debugPrint("Поиск наиболее похожего символа для: \(input)")
+        debugPrint("Поиск наиболее похожего символа для: \(input)")
 
         if let cachedResult = cache.object(forKey: input as NSString) {
-//            debugPrint("Результат найден в кеше: \(cachedResult)")
+            debugPrint("Результат найден в кеше: \(cachedResult)")
             return cachedResult as String
         }
 
@@ -147,7 +143,7 @@ public final class MLSymbolFinder {
                 group.enter()
                 queue.async {
                     let similarity = self.cosineSimilarity(vectorA: inputEmbedding, vectorB: embedding)
-//                    debugPrint("Сходство между '\(input)' и '\(symbol)': \(similarity)")
+                    debugPrint("Сходство между '\(input)' и '\(symbol)': \(similarity)")
                     lock.lock()
                     if similarity > highestSimilarity {
                         highestSimilarity = similarity
@@ -157,22 +153,20 @@ public final class MLSymbolFinder {
                     group.leave()
                 }
             }
-
             group.wait()
 
             if let result = mostSimilarSymbol {
-//                debugPrint("Наиболее похожий символ: \(result) с похожестью \(highestSimilarity)")
+                debugPrint("Наиболее похожий символ: \(result) с похожестью \(highestSimilarity)")
                 cache.setObject(result as NSString, forKey: input as NSString)
                 return result
             }
         }
 
         if let bkResult = bkTree.search(word: input, tolerance: 2).first {
-//            debugPrint("Наиболее похожий символ найден в BK-Tree: \(bkResult)")
+            debugPrint("Наиболее похожий символ найден в BK-Tree: \(bkResult)")
             cache.setObject(bkResult as NSString, forKey: input as NSString)
             return bkResult
         }
-
         debugPrint("Не удалось найти похожий символ для: \(input)")
         return nil
     }
@@ -182,8 +176,7 @@ public final class MLSymbolFinder {
         if let vector = embedding?.vector(for: text) {
             return vector
         } else {
-//            debugPrint("Эмбеддинг не найден для текста: \(text)")
-            return nil
+            debugPrint("Эмбеддинг не найден для текста: \(text)"); return nil
         }
     }
 
@@ -191,9 +184,8 @@ public final class MLSymbolFinder {
         var tokens = [String]()
         let tokenizer = NLTokenizer(unit: .sentence)
         tokenizer.string = text
-        tokenizer.enumerateTokens(in: text.startIndex..<text.endIndex) { tokenRange, _ in
-            tokens.append(String(text[tokenRange]))
-            return true
+        tokenizer.enumerateTokens(in: text.startIndex ..< text.endIndex) { tokenRange, _ in
+            tokens.append(String(text[tokenRange])); return true
         }
         return tokens
     }
@@ -217,7 +209,7 @@ final class BKTreeNode: Codable {
 
 final class BKTree: Codable {
     private var root: BKTreeNode?
-    
+
     func add(word: String) {
         guard let root = root else {
             self.root = BKTreeNode(word: word)
@@ -225,7 +217,7 @@ final class BKTree: Codable {
         }
         addNode(root, word)
     }
-    
+
     private func addNode(_ node: BKTreeNode, _ word: String) {
         let distance = levenshtein(aStr: node.word, bStr: word)
         if let child = node.children[distance] {
@@ -234,41 +226,41 @@ final class BKTree: Codable {
             node.children[distance] = BKTreeNode(word: word)
         }
     }
-    
+
     func search(word: String, tolerance: Int) -> [String] {
         guard let root = root else { return [] }
         var results: [String] = []
         searchNode(root, word, tolerance, &results)
         return results
     }
-    
+
     private func searchNode(_ node: BKTreeNode, _ word: String, _ tolerance: Int, _ results: inout [String]) {
         let distance = levenshtein(aStr: node.word, bStr: word)
         if distance <= tolerance {
             results.append(node.word)
         }
-        for i in (distance - tolerance)...(distance + tolerance) {
+        for i in (distance - tolerance) ... (distance + tolerance) {
             if let child = node.children[i] {
                 searchNode(child, word, tolerance, &results)
             }
         }
     }
-    
+
     private func levenshtein(aStr: String, bStr: String) -> Int {
         let a = Array(aStr)
         let b = Array(bStr)
         let n = a.count
         let m = b.count
-        
-        var currentRow = [Int](0...m)
+
+        var currentRow = [Int](0 ... m)
         var previousRow = [Int](repeating: 0, count: m + 1)
-        
-        for i in 1...n {
+
+        for i in 1 ... n {
             previousRow = currentRow
             currentRow = [Int](repeating: 0, count: m + 1)
             currentRow[0] = i
-            
-            for j in 1...m {
+
+            for j in 1 ... m {
                 let cost = a[i - 1] == b[j - 1] ? 0 : 1
                 currentRow[j] = min(
                     previousRow[j] + 1,
@@ -277,7 +269,7 @@ final class BKTree: Codable {
                 )
             }
         }
-        
+
         return currentRow[m]
     }
 }

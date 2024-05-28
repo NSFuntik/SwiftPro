@@ -26,6 +26,22 @@ public extension View {
                 }
         } else { self }
     }
+    func popup<PopupContent: View>(
+        alignment: Alignment,
+        isPresented: Binding<Bool>,
+        @ViewBuilder content: @escaping (Bool) -> PopupContent
+    ) -> some View {
+        self
+            .clipped()
+            .modifier(Popup(alignment: alignment, item: .init(get: {
+                 isPresented.wrappedValue
+                
+            }, set: { item in
+                if let item = item {
+                    isPresented.wrappedValue = true
+                } else { isPresented.wrappedValue = false }
+            }), content: content))
+    }
 }
 
 public struct Popup<PopupContent: View, Item: Hashable>: ViewModifier, Hashable {
