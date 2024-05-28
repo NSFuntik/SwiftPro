@@ -165,14 +165,6 @@ public extension UIApplication {
             .flatMap({ $0 as? UIWindowScene })?.windows
             .first(where: \.isKeyWindow)
     }
-    
-    class func getTopVC(base: UIViewController?
-                        = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
-        if let presented = base?.presentedViewController {
-            return getTopVC(base: presented)
-        }
-        return base
-    }
 }
 
 public extension UIApplication {

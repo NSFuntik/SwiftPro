@@ -5,7 +5,7 @@
 //  Created by Dmitry Mikhaylov on 27.02.2024.
 //
 
-import Foundation
+import UIKit
 
 public extension ISO8601DateFormatter {
     static var full: ISO8601DateFormatter {

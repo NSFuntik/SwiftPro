@@ -94,7 +94,3 @@ public extension View {
         ))
     }
 }
-//chatTheme.generalColors.$chatBackgroundColor.overlay(
-//    Image("Pattern", bundle: .module)
-//        .resizable(resizingMode: .tile)
-//    .foregroundStyle(chatTheme.generalColors.$inputHintColor.opacity(0.77))).ignoresSafeArea(.all)

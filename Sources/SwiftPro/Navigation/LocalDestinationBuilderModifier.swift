@@ -1,6 +1,5 @@
-import Foundation
 import SwiftUI
-
+import Combine
 /// Uniquely identifies an instance of a local destination builder.
 struct LocalDestinationID: RawRepresentable, Hashable {
     public let rawValue: UUID

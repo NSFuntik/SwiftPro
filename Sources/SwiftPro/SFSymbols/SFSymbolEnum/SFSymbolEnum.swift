@@ -17,8 +17,8 @@ public extension Image {
     }
 
     @available(iOS 13.0, macOS 11.0, tvOS 13.0, watchOS 6.0, *)
-    init(symbol:SFSymbol){
-        self = Image(systemName:symbol.name)
+    init(sf symbol: SFSymbol){
+        self = Image(systemName: symbol.name)
     }
 }
 

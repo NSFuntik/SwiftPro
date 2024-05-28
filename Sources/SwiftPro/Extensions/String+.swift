@@ -7,8 +7,11 @@
 
 import Foundation
 import RegexBuilder
+#if canImport(UIKit)
 import UIKit
-
+#else
+import AppKit
+#endif
 public extension String {
     subscript(value: Int) -> Character {
         self[index(at: value)]

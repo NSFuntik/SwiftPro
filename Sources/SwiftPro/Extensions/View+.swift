@@ -15,7 +15,7 @@ public extension View {
     ///   - content: The modifier to apply to the view.
     /// - Returns: The modified view.
 
-    @ViewBuilder @inlinable
+    @ViewBuilder
     func `if`<T>(
         _ condition: @autoclosure () -> Bool,
         _ transform: (Self) -> T)
@@ -27,12 +27,12 @@ public extension View {
         }
     }
 
-    @ViewBuilder @inlinable
-    func `if`<T, _T>(
+    @ViewBuilder
+    func `if`<T, F>(
         _ condition: @autoclosure () -> Bool,
         _ transform: (Self) -> T,
-        else _transform: (Self) -> _T
-    ) -> some View where T: View, _T: View {
+        else _transform: (Self) -> F
+    ) -> some View where T: View, F: View {
         if condition() {
             transform(self)
         } else {
@@ -80,29 +80,11 @@ public extension View {
         }
     }
 
-    @ViewBuilder @inlinable
-    func hidden(_ isHidden: Bool) -> some View {
-        if isHidden {
-            hidden()
-        } else {
-            self
-        }
-    }
+    @ViewBuilder
+    func isHidden(_ isHidden: Bool) -> some View { if isHidden { hidden() } }
 
     @inlinable
     func spacing() -> some View { HStack { self; Spacer() } }
-    
-    
-}
-struct Spacing: ViewModifier {
-    @inlinable init() { }
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        HStack {
-            content
-            Spacer()
-        }
-    }
 }
 
 public extension Font {
@@ -198,8 +180,6 @@ extension Color {
     public init(adaptWithSeed: String) {
         self.init(UIColor.adaptiveColor(withSeed: adaptWithSeed))
     }
-
-  
 }
 
 public extension View {
@@ -209,7 +189,7 @@ public extension View {
             contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 13, style: .continuous).inset(by: -20))
                 .hoverEffect(.highlight)
         } else {
-            hoverEffect(.highlight)
+            hoverEffect(.highlight, isEnabled: true)
         }
     }
 
@@ -225,7 +205,7 @@ public extension View {
     @ViewBuilder
     func vibrantForeground(thick: Bool = false) -> some View {
         if #available(iOS 15, *) {
-            foregroundStyle(thick ? .ultraThickMaterial : .bar)
+            foregroundStyle(thick ? .thickMaterial : .thin)
         } else {
             foregroundColor(Color(.systemBackground))
         }

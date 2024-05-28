@@ -1,7 +1,6 @@
-
+import Combine
 import os.log
 import SwiftUI
-///
 
 open class SwiftUILogger: ObservableObject {
     ///
@@ -148,8 +147,8 @@ open class SwiftUILogger: ObservableObject {
     @Published var filteredTags: Set<String>
 
     ///
-    @Published public var logs: [Event]
-    public var displayedLogs: [Event] {
+    @Published public var logs: [SwiftUILogger.Event]
+    public var displayedLogs: [SwiftUILogger.Event] {
         return filteredTags.isEmpty
             ? logs
             : logs.filter {
@@ -203,28 +202,21 @@ open class SwiftUILogger: ObservableObject {
         _ line: Int = #line
     ) {
         guard Thread.isMainThread else {
-            return DispatchQueue.main.async {
-                self.log(level, message, error, tags, file, line)
+            return DispatchQueue.main.async { [weak self] in
+                self?.log(level, message, error, tags, file, line)
             }
         }
 
         lock.lock()
         defer {
             #if DEBUG
-                let osLog = Logger(subsystem: Bundle.debugDescription(), category: file.description.appending(" \(line)"))
-                switch level {
-                case .debug, .success: osLog.debug("\(level.symbol) \(message)")
-                case .trace: osLog.trace("\(level.symbol) \(message)")
-                case .info: osLog.info("\(level.symbol) \(message)")
-                case .warning: osLog.warning("\(level.symbol) \(message)")
-                case .error: osLog.error("\(level.symbol) \(message)")
-                case .fatal: osLog.fault("\(level.symbol) \(message)")
-                }
+                debugPrint("\(level.symbol) \(message)")
+
             #endif
             lock.unlock()
         }
-        DispatchQueue.main.async {
-            self.logs.append(
+        DispatchQueue.main.async { [weak self] in
+            self?.logs.append(
                 Event(
                     level: level,
                     message: message,

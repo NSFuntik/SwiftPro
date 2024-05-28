@@ -1,4 +1,4 @@
-import Foundation
+import Combine
 import SwiftUI
 
 public extension ObservableObject {

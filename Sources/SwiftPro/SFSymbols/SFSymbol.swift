@@ -1,5 +1,3 @@
-
-
 import Foundation
 
 public extension SFSymbol {
@@ -24,28 +22,18 @@ public extension SFSymbol {
         }
     }
 
-    /// Finds the most similar symbol to a given input string.
-    /// This method searches through all `SFSymbol` cases to find the symbol
-    /// whose name has the minimum Levenshtein distance to the input string.
-    ///
-    /// - Parameter input: A string to compare against symbol names.
-    /// - Returns: The `SFSymbol` that is most similar to the provided input string.
-    ///            Returns `nil` if there are no symbols (unlikely in practical scenarios).
-    static func findSymbol(by input: String) -> SFSymbol? {
-        guard input.isEmpty == false else { return nil }
-        let allSymbols = SFSymbol.allCases
-        var minimumDistance = Int.max
-        var mostSimilarSymbol: SFSymbol?
-
-        for symbol in allSymbols {
-            let distance = SFSymbol.levenshteinDistance(from: symbol.name, to: input)
-            if distance < minimumDistance {
-                minimumDistance = distance
-                mostSimilarSymbol = symbol
-            }
-        }
-        return mostSimilarSymbol
-    }
+//    /// Finds the most similar symbol to a given input string.
+//    /// This method searches through all `SFSymbol` cases to find the symbol
+//    /// whose name has the minimum Levenshtein distance to the input string.
+//    ///
+//    /// - Parameter input: A string to compare against symbol names.
+//    /// - Returns: The `SFSymbol` that is most similar to the provided input string.
+//    ///            Returns `nil` if there are no symbols (unlikely in practical scenarios).
+//    static func findSymbol(by input: String) -> SFSymbol? {
+//        guard input.isEmpty == false else { return nil }
+//        
+//        return AISymbolFinder.findMostSimilarSymbol(to: input)
+//    }
 
     /// ## Levenshtein Distance Algorithm
     /// *Descriprion:*  Calculates the Levenshtein distance between two strings.

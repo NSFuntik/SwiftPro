@@ -1,4 +1,3 @@
-import Foundation
 import SwiftUI
 
 /// The time it takes for a push or pop operation, during which time another push or pop operation would be problematic.

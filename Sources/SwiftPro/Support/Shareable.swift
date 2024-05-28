@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import Combine
 #if os(macOS) || os(iOS)
     import SwiftUI
 

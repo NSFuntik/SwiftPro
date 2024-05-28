@@ -1,4 +1,3 @@
-import Factory
 import SwiftUI
 import CoreAudio
 
@@ -37,17 +36,19 @@ public struct AudioPlayerEnvironmentKey: EnvironmentKey {
     @MainActor public static let defaultValue: AudioPlayer = AudioPlayer.shared
 }
 
-public extension SharedContainer {
-    @MainActor var audioPlayer: Factory<AudioPlayer> {
-        self { AudioPlayerEnvironmentKey.defaultValue }.singleton
+public extension EnvironmentValues {
+    var audioPlayer: AudioPlayer {
+        get { self[AudioPlayerEnvironmentKey.self] }
+        set { self[AudioPlayerEnvironmentKey.self] = newValue }
     }
 }
 
 public struct AudioFeedback: Feedback, ViewModifier {
-    @Injected(\.audioPlayer) private var player
+    @Environment(\.audioPlayer) private var player
     
     public func body(content: Content) -> some View {
         content
+            .environment(\.audioPlayer, player)
             .task(id: audio.hashValue, {
                 try? await player.play(audio: audio)
             })

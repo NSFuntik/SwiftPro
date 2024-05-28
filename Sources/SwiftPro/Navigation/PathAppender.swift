@@ -1,4 +1,4 @@
-import Foundation
+import Combine
 import SwiftUI
 
 /// An object that never publishes changes, but allows appending to an NBNavigationStack's path.

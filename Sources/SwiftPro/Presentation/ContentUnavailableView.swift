@@ -34,6 +34,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
     let image: Image
     var content: (() -> Content)?
     var actionTitle: String = "Retry"
+    var actionSymbol: SFSymbol = .arrowClockwise
     let action: (() -> Void)?
     @Environment(\.refresh) var refresh
     @Environment(\.dismiss) var dismiss
@@ -43,6 +44,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         message: String,
         image: Image,
         actionTitle: String = "Retry",
+        actionSymbol: SFSymbol = .arrowClockwise,
         action: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> Content = { EmptyView() }
     ) {
@@ -51,20 +53,23 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         self.image = image
         self.content = content
         self.actionTitle = actionTitle
+        self.actionSymbol = actionSymbol
         self.action = action
     }
 
     public init(
         _ title: String,
-        image: Image,
+        image: SFSymbol,
         actionTitle: String = "Retry",
+        actionSymbol: SFSymbol = .arrowClockwise,
         action: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> Content = { EmptyView() }
     ) {
         self.title = title
         self.message = ""
-        self.image = image
+        self.image = image.image
         self.actionTitle = actionTitle
+        self.actionSymbol = actionSymbol
         self.content = content
         self.action = action
     }
@@ -73,6 +78,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         _ title: String,
         symbol: String,
         actionTitle: String = "Retry",
+        actionSymbol: SFSymbol = .arrowClockwise,
         action: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> Content = { EmptyView() }
     ) {
@@ -80,6 +86,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         self.message = ""
         self.image = Image(systemName: symbol)
         self.actionTitle = actionTitle
+        self.actionSymbol = actionSymbol
         self.content = content
         self.action = action
     }
@@ -89,6 +96,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         symbol: SFSymbol,
         description: String,
         actionTitle: String = "Retry",
+        actionSymbol: SFSymbol = .arrowClockwise,
         action: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> Content = { EmptyView() }
     ) {
@@ -101,7 +109,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
     }
 
     public var body: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .center, spacing: 16) {
             image
                 .font(.largeTitle)
                 .imageScale(.large)

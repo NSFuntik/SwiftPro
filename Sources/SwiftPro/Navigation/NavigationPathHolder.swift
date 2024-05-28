@@ -1,4 +1,4 @@
-import Foundation
+import Combine
 import SwiftUI
 
 /// An object that publishes changes to the path Array it holds.

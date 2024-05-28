@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 /**
  This protocol can be implemented by error types that can be
  used together with an ``ErrorAlerter``.

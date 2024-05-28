@@ -12,7 +12,7 @@ import Foundation
  - SeeAlso: `AnyEncodable`
  - SeeAlso: `AnyDecodable`
  */
-@frozen public struct AnyCodable: Codable {
+@frozen public struct AnyCodable: @unchecked Sendable, Codable {
     public let value: Any
 
     public init<T>(_ value: T?) {

@@ -17,9 +17,30 @@ public extension View {
             .clipped()
             .modifier(Popup(alignment: alignment, item: item, content: content))
     }
+    @ViewBuilder
+    func popup<PopupContent: View, Item: Hashable>(popup: Binding<Popup<PopupContent, Item>?>) -> some View {
+        if let popup = popup.wrappedValue {
+            self
+                .popup(alignment: popup.alignment, item: popup.$item) { item in
+                    popup.$popup.wrappedValue(item)
+                }
+        } else { self }
+    }
 }
 
-public struct Popup<PopupContent: View, Item: Hashable>: ViewModifier {
+public struct Popup<PopupContent: View, Item: Hashable>: ViewModifier, Hashable {
+    public static func == (lhs: Popup<PopupContent, Item>, rhs: Popup<PopupContent, Item>) -> Bool {
+        return lhs.alignment == rhs.alignment && lhs.item == rhs.item && lhs.hashValue == rhs.hashValue
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(item)
+        hasher.combine(offset)
+        
+        
+        
+    }
+    
     @ViewBuilder
     public func body(content: Content) -> some View {
         content
@@ -98,7 +119,7 @@ public struct Popup<PopupContent: View, Item: Hashable>: ViewModifier {
     ) {
         self.alignment = alignment
         self._item = item
-        self.popup = content
+        self._popup = State(wrappedValue: content)
     }
 }
 

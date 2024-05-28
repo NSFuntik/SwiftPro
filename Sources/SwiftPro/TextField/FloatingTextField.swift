@@ -18,10 +18,15 @@ public struct FloatingTextField: View {
 
     private var onTextAction: ((_ oldValue: String, _ newValue: String) -> Void)?
 
-    public init(placeholderText: String, placeholderOffset: CGFloat = 0, scaleEffectValue: CGFloat = 1, onTextAction: ((_: String, _: String) -> Void)? = nil) {
+    public init(
+        placeholderText: String,
+        placeholderOffset offset: CGFloat = 0,
+        scaleEffectValue scale: CGFloat = 1,
+        onTextAction: ((_: String, _: String) -> Void)? = nil
+    ) {
         self.placeholderText = placeholderText
-        self.placeholderOffset = placeholderOffset
-        self.scaleEffectValue = scaleEffectValue
+        self._placeholderOffset = State(initialValue: offset)
+        self._scaleEffectValue = State(initialValue: scale)
         self.onTextAction = onTextAction
     }
 

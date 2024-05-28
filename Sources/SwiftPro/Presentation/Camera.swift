@@ -11,7 +11,11 @@ import CoreMedia
 import os.log
 import Photos
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#else
+import AppKit
+#endif
 
 extension UIImage: Identifiable {
     public var id: Int {
@@ -134,7 +138,7 @@ public struct CameraView: View {
                 Label {
                     Text("Close Camera")
                 } icon: {
-                    Image(symbol: .xmarkCircle)
+                    Image(sf: .xmarkCircle)
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(Color(.systemRed).opacity(0.66), Color(.secondaryLabel))
                 }
@@ -150,7 +154,7 @@ public struct CameraView: View {
                     Label {
                         Text("Send Photo")
                     } icon: {
-                        Image(symbol: .paperplaneCircleFill)
+                        Image(sf: .paperplaneCircleFill)
                             .symbolRenderingMode(.multicolor)
                             .imageScale(.large)
                             .rotationEffect(.degrees(45), anchor: .center)
@@ -181,7 +185,7 @@ public struct CameraView: View {
                     Label {
                         Text("Take Photo")
                     } icon: {
-                        Image(symbol: .circleInsetFilled)
+                        Image(sf: .circleInsetFilled)
                             .symbolRenderingMode(.palette)
                             .foregroundStyle(.secondary, .primary.opacity(0.88))
                     }
@@ -202,7 +206,7 @@ public struct CameraView: View {
                 Label {
                     Text("Switch Camera")
                 } icon: {
-                    Image(symbol: capturedImage != nil ? .arrowTriangle2CirclepathCamera : .arrowTriangle2CirclepathCircle)
+                    Image(sf: capturedImage != nil ? .arrowTriangle2CirclepathCamera : .arrowTriangle2CirclepathCircle)
                         .symbolRenderingMode(.hierarchical)
                         .imageScale(.large)
                 }
@@ -217,7 +221,7 @@ public struct CameraView: View {
     func handleCameraPreviews() async {
         guard await CameraUtility.isCameraAvailable() else {
             debugPrint("Camera is not available.")
-            viewfinderImage = Image(symbol: .pc)
+            viewfinderImage = Image(sf: .pc)
                 .symbolRenderingMode(.multicolor)
                 .resizable(resizingMode: .stretch)
                 .interpolation(.high)
@@ -293,7 +297,7 @@ struct CameraContolLabelStyle<S>: LabelStyle where S: ShapeStyle {
                 .shadow(color: Color(.secondarySystemFill), radius: 4)
         }
         .labelStyle(IconOnlyLabelStyle())
-        .help("\(configuration.title)")
+        
     }
 }
 
@@ -693,7 +697,7 @@ fileprivate extension UIScreen {
     }
 }
 
-fileprivate let logger = Logger(subsystem: "com.apple.swiftplaygroundscontent.capturingphotos", category: "Camera")
+fileprivate let logger = Logger(subsystem: "com.apple.swiftplaygroundscontent.capturingphotos", category: "camera")
 
 public enum CameraError: Error {
     case missingPhotoOutput, missingVideoOutput

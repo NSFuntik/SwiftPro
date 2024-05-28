@@ -164,22 +164,22 @@ struct FloatingPopover<Item, PopoverContent>: ViewModifier where Item: Identifia
 }
 
 public extension View {
-    @inlinable
-    func contextMenu<M, P>(
-        @ViewBuilder _ menuItems: () -> M,
-        @ViewBuilder _ preview: () -> P
-    ) -> some View where M: View, P: View {
-        if #available(iOS 16, *) {
-            return contextMenu(menuItems: menuItems, preview: preview)
-        } else {
-            return contextMenu(ContextMenu(menuItems: {
-                VStack(alignment: .leading, spacing: 5, content: {
-                    menuItems()
-                    preview()
-                })
-            }))
-        }
-    }
+//    @inlinable
+//    func contextMenu<M, P>(
+//        @ViewBuilder _ menuItems: () -> M,
+//        @ViewBuilder _ preview: () -> P
+//    ) -> some View where M: View, P: View {
+//        if #available(iOS 16, *) {
+//            return contextMenu(menuItems: menuItems, preview: preview)
+//        } else {
+//            return contextMenu(ContextMenu(menuItems: {
+//                VStack(alignment: .leading, spacing: 5, content: {
+//                    menuItems()
+//                    preview()
+//                })
+//            }))
+//        }
+//    }
 
     @ViewBuilder
     func floatingPopover<Item: Identifiable>(

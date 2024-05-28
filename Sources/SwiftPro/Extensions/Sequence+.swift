@@ -24,9 +24,10 @@ public extension Array {
         result.append(contentsOf: other)
         return result
     }
+    @inlinable var lastIndex: Int { endIndex - 1 }
 }
 
-public extension Array {
+public extension Collection {
     func asyncMap<T>(
         _ transform: (Element) async throws -> T
     ) async rethrows -> [T] {
@@ -53,13 +54,13 @@ public extension Array {
         return values
     }
 
-    @inlinable var lastIndex: Int { endIndex - 1 }
+   
 }
 
 public extension Array where Element: Identifiable & Equatable, Index == Int {
     subscript(safe index: Int) -> Element? {
         get {
-            return indices.contains(index) ? self[index] : nil
+            return  indices.contains(index) ? self[index] : nil
         }
 
         set {

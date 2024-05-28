@@ -58,7 +58,7 @@ public struct RefreshButtonStyle: ButtonStyle {
             .padding(.vertical, 6)
             .background {
                 Capsule(style: .continuous)
-                    .foregroundColor(.primary.opacity(configuration.isPressed ? 0.2 : 0.1))
+                    .foregroundStyle(.primary.opacity(configuration.isPressed ? 0.2 : 0.1))
             }
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .animation(.spring(response: 0.2), value: configuration.isPressed)

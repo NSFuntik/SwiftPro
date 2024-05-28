@@ -27,14 +27,14 @@ public struct FittingGeometryReader<Content>: View where Content: View {
 
 }
 
-private struct SizePreferenceKey: PreferenceKey {
+fileprivate struct SizePreferenceKey: PreferenceKey {
     static var defaultValue: CGSize = .zero
     static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
         value = nextValue()
     }
 }
 
-private struct SizeModifier: ViewModifier {
+fileprivate struct SizeModifier: ViewModifier {
     func body(content: Content) -> some View {
         content.overlay(
             GeometryReader { geo in

@@ -5,10 +5,10 @@ public struct AsyncButton<Label: View, Trigger: Equatable>: View {
     var cancellation: Trigger?
     let action: () async -> Void
     let label: Label
-    
+
     @State private var task: Task<Void, Never>?
     @State private var isRunning = false
-    
+
     init(
         cancellation: Trigger = false,
         action: @escaping () async -> Void,
@@ -18,7 +18,7 @@ public struct AsyncButton<Label: View, Trigger: Equatable>: View {
         self.action = action
         self.label = label()
     }
-    
+
     init(
         cancellation: Trigger = false,
         action: Void,
@@ -28,9 +28,7 @@ public struct AsyncButton<Label: View, Trigger: Equatable>: View {
         self.action = { action }
         self.label = label()
     }
-    
-  
-    
+
     public var body: some View {
         Button {
             isRunning = true
@@ -43,7 +41,9 @@ public struct AsyncButton<Label: View, Trigger: Equatable>: View {
         }
         .disabled(isRunning)
         .opacity(isRunning ? 0.5 : 1)
-        .shimmering(active: isRunning, animation: .interactiveSpring)
+        .shimmering(active: isRunning)
+        .if(isRunning, { $0.overlay(alignment: .center, content: { ProgressView().progressViewStyle(.circular).padding() }) })
+
         .onChange(of: cancellation) { _ in
             task?.cancel()
         }
@@ -58,6 +58,4 @@ public extension AsyncButton where Trigger == Never {
         self.action = action
         self.label = label()
     }
-    
 }
-

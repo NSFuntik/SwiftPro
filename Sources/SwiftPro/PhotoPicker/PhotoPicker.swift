@@ -1,4 +1,3 @@
-#if os(iOS)
 import SwiftUI
 import PhotosUI
 import Photos
@@ -489,4 +488,4 @@ extension NSItemProvider {
 
 
 
-#endif
+

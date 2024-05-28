@@ -17,7 +17,7 @@ public extension Button {
     ) where Label == SwiftUI.Label<Text, Image?> {
         self.init(role: type.role, action: action) {
             Label(
-                title: { Text(title ?? type.title, bundle: title == nil ? .module : bundle) },
+                title: { Text(title ?? type.title, bundle: bundle) },
                 icon: { icon ?? type.image }
             )
         }
