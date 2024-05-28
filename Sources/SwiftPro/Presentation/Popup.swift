@@ -17,6 +17,7 @@ public extension View {
             .clipped()
             .modifier(Popup(alignment: alignment, item: item, content: content))
     }
+
     @ViewBuilder
     func popup<PopupContent: View, Item: Hashable>(popup: Binding<Popup<PopupContent, Item>?>) -> some View {
         if let popup = popup.wrappedValue {
@@ -26,6 +27,7 @@ public extension View {
                 }
         } else { self }
     }
+
     func popup<PopupContent: View>(
         alignment: Alignment,
         isPresented: Binding<Bool>,
@@ -33,14 +35,7 @@ public extension View {
     ) -> some View {
         self
             .clipped()
-            .modifier(Popup(alignment: alignment, item: .init(get: {
-                 isPresented.wrappedValue
-                
-            }, set: { item in
-                if let item = item {
-                    isPresented.wrappedValue = true
-                } else { isPresented.wrappedValue = false }
-            }), content: content))
+            .modifier(Popup(alignment: alignment, isPresented: isPresented, content: content))
     }
 }
 
@@ -48,76 +43,80 @@ public struct Popup<PopupContent: View, Item: Hashable>: ViewModifier, Hashable 
     public static func == (lhs: Popup<PopupContent, Item>, rhs: Popup<PopupContent, Item>) -> Bool {
         return lhs.alignment == rhs.alignment && lhs.item == rhs.item && lhs.hashValue == rhs.hashValue
     }
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(item)
         hasher.combine(offset)
-        
-        
-        
     }
-    
+
+    var shouldDismiss: Bool = true
+
     @ViewBuilder
     public func body(content: Content) -> some View {
-        content
-            .overlay(alignment: alignment) {
-                Group {
-                    if let item = self.item {
-                        popup(item)
-                            .saveSize(in: $size)
-                            .offset(y: offset)
-                            .gesture(
-                                DragGesture()
-                                    .onChanged({ value in
+        ZStack(alignment: alignment) {
+            content
+                
+            Group {
+                if let item = self.item {
+                    popup(item)
+                        .saveSize(in: $size)
+                        .offset(y: offset)
+                        .gesture(
+                            DragGesture()
+                                .onChanged({ value in
+                                    if alignment == .bottom {
+                                        if value.translation.height < size.height {
+                                            withAnimation {
+                                                offset = value.translation.height
+                                            }
+                                        }
+                                    } else if alignment == .top {
+                                        if value.translation.height > -size.height {
+                                            withAnimation {
+                                                offset = value.translation.height
+                                            }
+                                        }
+                                    }
+                                })
+                                .onEnded({ _ in
+                                    withAnimation {
                                         if alignment == .bottom {
-                                            if value.translation.height < size.height {
-                                                withAnimation {
-                                                    offset = value.translation.height
-                                                }
+                                            if offset <= size.height / 2 {
+                                                offset = 0
+                                            } else {
+                                                self.item = .none
+
+                                                offset = 0
                                             }
                                         } else if alignment == .top {
-                                            if value.translation.height > -size.height {
-                                                withAnimation {
-                                                    offset = value.translation.height
-                                                }
+                                            if offset >= -size.height / 2 {
+                                                offset = 0
+                                            } else {
+                                                self.item = .none
+                                                offset = 0
                                             }
                                         }
-                                    })
-                                    .onEnded({ _ in
-                                        withAnimation {
-                                            if alignment == .bottom {
-                                                if offset <= size.height / 2 {
-                                                    offset = 0
-                                                } else {
-                                                    self.item = .none
+                                    }
+                                })
+                        )
+                        .onAppear(perform: {
+                            if shouldDismiss {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: {
+                                    self.item = .none
+                                })
+                            }
 
-                                                    offset = 0
-                                                }
-                                            } else if alignment == .top {
-                                                if offset >= -size.height / 2 {
-                                                    offset = 0
-                                                } else {
-                                                    self.item = .none
-                                                    offset = 0
-                                                }
-                                            }
-                                        }
-                                    })
-                            )
-                    }
+                        })
                 }
-                .padding(16, 12)
-                .onAppear(perform: {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 4.20, execute: {
-                        self.item = .none
-                    })
-                })
             }
-            .animation(.interactiveSpring, value: offset)
-            .animation(.bouncy(duration: 0.3), value: size)
-            .transition(.move(edge: alignment == .bottom ? .bottom : .top).combined(with: .offset(y: alignment == .bottom ? -100 : 100)).animation(.bouncy))
-            .clipped()
-            .background(.clear)
+            .padding(16, 12)
+            
+        }
+        .animation(.interactiveSpring, value: offset)
+        .animation(.bouncy(duration: 0.3), value: size)
+        .transition(.move(edge: alignment == .bottom ? .bottom : .top).combined(with: .offset(y: alignment == .bottom ? -100 : 100)).animation(.bouncy))
+        .clipped()
+        .background(.clear)
     }
 
     @State var popup: (Item) -> PopupContent
@@ -135,6 +134,23 @@ public struct Popup<PopupContent: View, Item: Hashable>: ViewModifier, Hashable 
     ) {
         self.alignment = alignment
         self._item = item
+        self._popup = State(wrappedValue: content)
+    }
+    
+    init(
+        alignment: Alignment = .top,
+        isPresented: Binding<Bool>,
+        @ViewBuilder content: @escaping (Bool) -> PopupContent
+    ) where Item == Bool {
+        self.alignment = alignment
+        self.shouldDismiss = false
+        self._item = .init(get: {
+            let bool: Bool? = isPresented.wrappedValue
+            return bool
+        }, set: { item in
+            guard let _ = item else { isPresented.wrappedValue = false; return }
+            isPresented.wrappedValue = true
+        })
         self._popup = State(wrappedValue: content)
     }
 }
