@@ -28,6 +28,9 @@ public extension Array {
 }
 
 public extension Collection {
+    func indexed() -> Array<(offset: Int, element: Element)> {
+         Array(enumerated())
+     }
     func asyncMap<T>(
         _ transform: (Element) async throws -> T
     ) async rethrows -> [T] {

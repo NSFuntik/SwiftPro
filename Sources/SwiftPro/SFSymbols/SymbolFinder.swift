@@ -5,13 +5,12 @@
 //  Created by Dmitry Mikhaylov on 25.05.2024.
 //
 
-import Factory
 import Foundation
 import NaturalLanguage
 extension SharedContainer {
     public var symbolFinder: Factory<MLSymbolFinder> { self { .default }.singleton }
 }
-
+//extension NSCache<NSString, NSString>: @unchecked Sendable {}
 /// ### Основные функции:
 /// 1. **Сохранение кэша на диск**: Метод `saveCacheToDisk` используется для сериализации эмбеддингов и сохранения их на диск.
 /// 2. **Загрузка кэша с диска**: Метод `loadCacheFromDisk` используется для десериализации эмбеддингов при запуске приложения.
@@ -21,11 +20,11 @@ public final class MLSymbolFinder {
     // Singleton instance
     public static let `default` = MLSymbolFinder()
 
-    private var cache = NSCache<NSString, NSString>()
+    static private var cache = NSCache<NSString, NSString>()
     private lazy var symbolEmbeddings = [String: [Double]]()
     private lazy var bkTree = BKTree()
     private let cacheFileURL: URL
-
+    
     private init() {
         // Определение пути к файлу кэша
         let fileManager = FileManager.default
@@ -34,10 +33,10 @@ public final class MLSymbolFinder {
 
         debugPrint("Инициализация MLSymbolFinder...")
         // Асинхронная инициализация эмбеддингов и BK-Tree для всех символов SFSymbol
-        DispatchQueue.global(qos: .utility).async { self.initialize() }
+        DispatchQueue.global(qos: .utility).async { Task { await self.initialize() } }
     }
 
-    public func initialize() {
+    private func initialize() async {
         // Попытка загрузки кэша с диска
         if !loadCacheFromDisk() {
             // Если загрузка кэша не удалась, инициализация эмбеддингов и BK-Tree
@@ -106,27 +105,27 @@ public final class MLSymbolFinder {
         }
     }
 
-    public func findMostSimilarSymbol(to input: String) -> SFSymbol? {
+    public static func findMostSimilarSymbol(to input: String) async -> SFSymbol? {
         let input = input.lowercased()
         debugPrint("Поиск наиболее похожего символа для: \(input)")
 
         // Проверка на точное соответствие
         if let exactMatch = SFSymbol(rawValue: input) {
-            debugPrint("Найден точный символ: \(input)")
+            debugPrint("Точный символ: \(input)")
             return exactMatch
         }
 
-        guard let result = findMostSimilarSymbolInternal(to: input.replacingOccurrences(of: ".", with: " ")) else {
+        guard let result = MLSymbolFinder.default.findMostSimilarSymbolInternal(to: input.replacingOccurrences(of: ".", with: " ")) else {
             return nil
         }
-        debugPrint("Найден похожий символ: \(result)")
+        debugPrint("охожий символ: \(result)")
         return SFSymbol(rawValue: result.replacingOccurrences(of: " ", with: "."))
     }
 
     private func findMostSimilarSymbolInternal(to input: String) -> String? {
         debugPrint("Поиск наиболее похожего символа для: \(input)")
 
-        if let cachedResult = cache.object(forKey: input as NSString) {
+        if let cachedResult = MLSymbolFinder.cache.object(forKey: input as NSString) {
             debugPrint("Результат найден в кеше: \(cachedResult)")
             return cachedResult as String
         }
@@ -157,14 +156,14 @@ public final class MLSymbolFinder {
 
             if let result = mostSimilarSymbol {
                 debugPrint("Наиболее похожий символ: \(result) с похожестью \(highestSimilarity)")
-                cache.setObject(result as NSString, forKey: input as NSString)
+                MLSymbolFinder.cache.setObject(result as NSString, forKey: input as NSString)
                 return result
             }
         }
 
         if let bkResult = bkTree.search(word: input, tolerance: 2).first {
             debugPrint("Наиболее похожий символ найден в BK-Tree: \(bkResult)")
-            cache.setObject(bkResult as NSString, forKey: input as NSString)
+            MLSymbolFinder.cache.setObject(bkResult as NSString, forKey: input as NSString)
             return bkResult
         }
         debugPrint("Не удалось найти похожий символ для: \(input)")

@@ -8,15 +8,21 @@
 import SwiftUI
 
 public extension View {
+    func embedInNavigation() -> some View {
+        NavigationView { self }
+    }
+
+    func eraseToAnyView() -> AnyView {
+        AnyView(self)
+    }
+
     /// Applies a modifier to a view conditionally.
     ///
     /// - Parameters:
     ///   - condition: The condition to determine if the content should be applied.
     ///   - content: The modifier to apply to the view.
     /// - Returns: The modified view.
-
-    @ViewBuilder
-    func `if`<T>(
+    @ViewBuilder func `if`<T>(
         _ condition: @autoclosure () -> Bool,
         _ transform: (Self) -> T)
         -> some View where T: View {
@@ -55,14 +61,7 @@ public extension View {
         }
     }
 
-    @inlinable
-    func foregroundStyle(_ color: Color) -> some View {
-        if #available(iOS 14, *) {
-            return foregroundStyle(AnyShapeStyle(color))
-        } else {
-            return foregroundColor(color)
-        }
-    }
+  
 
     @inlinable
     func padding(_ vertical: CGFloat, _ horizontal: CGFloat) -> some View {
@@ -70,7 +69,6 @@ public extension View {
             .padding(.horizontal, horizontal)
     }
 
-    ///
 
     @inlinable func backgroundStyled<S>(_ style: S) -> some View where S: ShapeStyle {
         if #available(iOS 16, *) {

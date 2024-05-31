@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Dmitry Mikhaylov on 17.05.2024.
 //
@@ -12,7 +12,6 @@ import SwiftUI
 /// You can apply this style with `.buttonStyle(.list)`, and
 /// can apply it to an entire list, like any other style.
 public struct ListButtonStyle: ButtonStyle {
-    
     /// Create a custom style.
     ///
     /// - Parameters:
@@ -22,10 +21,10 @@ public struct ListButtonStyle: ButtonStyle {
     ) {
         self.pressedOpacity = pressedOpacity
     }
-    
+
     /// The opacity to apply when the button is pressed.
     var pressedOpacity: Double
-    
+
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -35,10 +34,9 @@ public struct ListButtonStyle: ButtonStyle {
 }
 
 public extension ButtonStyle where Self == ListButtonStyle {
-    
     /// The standard list card button style.
     static var list: ListButtonStyle { .init() }
-    
+
     /// A custom list card button style.
     static func list(
         pressedOpacity: Double
@@ -52,14 +50,12 @@ public extension ButtonStyle where Self == RefreshButtonStyle {
 }
 
 public struct RefreshButtonStyle: ButtonStyle {
-    public  func makeBody(configuration: Configuration) -> some View {
+    public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
-            .background {
-                Capsule(style: .continuous)
-                    .foregroundStyle(.primary.opacity(configuration.isPressed ? 0.2 : 0.1))
-            }
+            .background(configuration.isPressed ? .regularMaterial : .ultraThinMaterial, in: Capsule(style: .continuous))
+
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .animation(.spring(response: 0.2), value: configuration.isPressed)
     }
@@ -67,12 +63,12 @@ public struct RefreshButtonStyle: ButtonStyle {
 
 public extension Button.StandardType {
     var id: String { rawValue }
-    
+
     var image: Image? {
         guard let imageName else { return nil }
-        return  .system(imageName)
+        return .system(imageName)
     }
-    
+
     var imageName: String? {
         switch self {
         case .add: "plus"
@@ -94,7 +90,7 @@ public extension Button.StandardType {
         case .share: "square.and.arrow.up"
         }
     }
-    
+
     var role: ButtonRole? {
         switch self {
         case .cancel: .cancel
@@ -102,7 +98,7 @@ public extension Button.StandardType {
         default: nil
         }
     }
-    
+
     var title: LocalizedStringKey {
         switch self {
         case .add: "Button.Add"
@@ -125,8 +121,8 @@ public extension Button.StandardType {
         }
     }
 }
+
 public extension Button where Label == SwiftUI.Label<Text, Image> {
-    
     /// This initializer lets you use buttons with less code.
     init(
         _ text: LocalizedStringKey,
@@ -142,6 +138,7 @@ public extension Button where Label == SwiftUI.Label<Text, Image> {
         }
     }
 }
+
 #Preview {
     @ViewBuilder
     func buttons() -> some View {
@@ -151,12 +148,12 @@ public extension Button where Label == SwiftUI.Label<Text, Image> {
             }
         }
     }
-    
+
     return List {
         buttons()
         buttons().labelStyle(.titleOnly)
         buttons().labelStyle(.iconOnly)
-    }
+    }.overlay(alignment: .top, content: { Button("Refresh Button", .init(sf: .arrowClockwise), action: { }).padding(33).buttonStyle(.refresh) })
     .toolbar {
         ToolbarItemGroup {
             buttons()

@@ -48,7 +48,8 @@ public struct ViewShadowStyle {
     public let y: CGFloat
 }
 
-public extension ViewShadowStyle {
+
+extension ViewShadowStyle {
     /// This style applies no shadow.
     public static let none = ViewShadowStyle(color: .clear)
 

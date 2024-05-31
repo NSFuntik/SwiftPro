@@ -8,9 +8,9 @@
 import Foundation
 import RegexBuilder
 #if canImport(UIKit)
-import UIKit
+    import UIKit
 #else
-import AppKit
+    import AppKit
 #endif
 public extension String {
     subscript(value: Int) -> Character {
@@ -181,7 +181,11 @@ public extension String {
         return result
     }
 
-    func width(withConstrainedWidth width: CGFloat, font: UIFont, messageUseMarkdown: Bool) -> CGFloat {
+    func width(
+        withConstrainedWidth width: CGFloat,
+        font: UIFont,
+        messageUseMarkdown: Bool
+    ) -> CGFloat {
         let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
         let boundingBox = toAttrString(font: font, messageUseMarkdown: messageUseMarkdown)
             .boundingRect(with: constraintRect,
@@ -204,7 +208,11 @@ public extension String {
         return NSAttributedString(str)
     }
 
-    func lastLineWidth(labelWidth: CGFloat, font: UIFont, messageUseMarkdown: Bool) -> CGFloat {
+    func lastLineWidth(
+        labelWidth: CGFloat,
+        font: UIFont,
+        messageUseMarkdown: Bool
+    ) -> CGFloat {
         // Create instances of NSLayoutManager, NSTextContainer and NSTextStorage
         let attrString = toAttrString(font: font, messageUseMarkdown: messageUseMarkdown)
         let availableSize = CGSize(width: labelWidth, height: .infinity)
@@ -229,11 +237,62 @@ public extension String {
         return lastLineFragmentRect.maxX
     }
 
-    func numberOfLines(labelWidth: CGFloat, font: UIFont, messageUseMarkdown: Bool) -> Int {
+    func numberOfLines(
+        labelWidth: CGFloat,
+        font: UIFont,
+        messageUseMarkdown: Bool
+    ) -> Int {
         let attrString = toAttrString(font: font, messageUseMarkdown: messageUseMarkdown)
         let availableSize = CGSize(width: labelWidth, height: .infinity)
         let textSize = attrString.boundingRect(with: availableSize, options: .usesLineFragmentOrigin, context: nil)
         let lineHeight = font.lineHeight
         return Int(ceil(textSize.height / lineHeight))
+    }
+}
+
+public extension String {
+    func levenshteinDistanceScore(
+        to string: String,
+        caseSensitive: Bool = false,
+        trimWhiteSpacesAndNewLines: Bool = true
+    ) -> Double {
+        var firstString = self
+        var secondString = string
+
+        if !caseSensitive {
+            firstString = firstString.lowercased()
+            secondString = secondString.lowercased()
+        }
+        if trimWhiteSpacesAndNewLines {
+            firstString = firstString.trimmingCharacters(in: .whitespacesAndNewlines)
+            secondString = secondString.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        let empty = [Int](repeating: 0, count: secondString.count)
+        var last = [Int](0 ... secondString.count)
+
+        for (i, tLett) in firstString.enumerated() {
+            var cur = [i + 1] + empty
+            for (j, sLett) in secondString.enumerated() {
+                cur[j + 1] = tLett == sLett ? last[j] : Swift.min(last[j], last[j + 1], cur[j]) + 1
+            }
+            last = cur
+        }
+
+        // maximum string length between the two
+        let lowestScore = max(firstString.count, secondString.count)
+
+        if let validDistance = last.last {
+            return 1 - (Double(validDistance) / Double(lowestScore))
+        }
+
+        return 0.0
+    }
+}
+
+public extension Array where Element == String {
+    func mostSimilar(to string: String) -> String? {
+        guard !isEmpty else { return nil }
+        return lazy.sorted { $0.levenshteinDistanceScore(to: string) < $1.levenshteinDistanceScore(to: string) }.first
     }
 }

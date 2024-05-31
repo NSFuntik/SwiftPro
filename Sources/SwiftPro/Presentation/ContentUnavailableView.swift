@@ -8,6 +8,7 @@
 import Photos
 import SwiftUI
 
+
 let cameraUnavailable =
     ContentUnavailableView(
         "Camera not avaible",
@@ -21,13 +22,83 @@ let cameraUnavailable =
                     }
                 }
             }
+        }, content: {
+            EmptyView()
         }
     )
 
 #Preview(body: {
-    cameraUnavailable
+    let messenger: ChannelServerData = ChannelServerData(id: "5d0cd1707741de0009e061cb_tlgr_yappy_bot", messenger: .tlgr, visible: true, link: "https://t.me/yappy_bot?start=", idx: 0)
+    
+   return ContentUnavailableView(
+        "Привет 👋",
+        message: "Мы помогаем вашему бизнесу расти, связывая вас с вашими клиентами.",
+        image: Image("DialogsLogo"),
+        actionTitle: "Отправить сообщение",
+        actionSymbol: .paperplane,
+        action: {  },
+        content: {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Поговорите с нами в любимом канале")
+                    .font(.system(.title3, .rounded, .semibold))
+                    .foregroundStyle(.black)
+                    .highlightEffect()
+
+                Text("Вы можете общаться в любимом канале на любом устройстве, будь то ноутбук, планшет или мобильный телефон.")
+                    .font(.subheadline).multilineTextAlignment(.leading)
+                    .foregroundStyle(.secondary)
+                if
+                   let url = URL(string: messenger.link) {
+                    Link(destination: url) {
+                        Label(messenger.messenger.description.capitalized, image: messenger.messenger.icon)
+                            .imageScale(.large)
+                            .font(.body.monospaced().bold())
+                            .foregroundStyle(.foreground)
+                            .padding(8, 16)
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(8).shadow(.sticker)
+                    }
+                }
+            }.padding(16).background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16)).clipped()
+        }
+    ).patternBackground(background: .clear).saturation(1.62).clipShape(RoundedRectangle(cornerRadius: 16))
 })
-// @available(iOS, introduced: 14.0, deprecated: 16.0, renamed: "ContentUnavailableView")
+extension ContentUnavailableView where Content == EmptyView {
+    public init(
+        _ title: String,
+        subheadline: String,
+        symbol: SFSymbol,
+        actionTitle: String = "Retry",
+        actionSymbol: SFSymbol = .arrowClockwise,
+        action: (() -> Void)? = nil
+    ) where Content == EmptyView {
+        self.title = title
+        self.message = subheadline
+        self.image = symbol.image
+        self.content = nil
+        self.actionTitle = actionTitle
+        self.actionSymbol = actionSymbol
+        self.action = action
+    }
+    
+    public init(
+        _ title: String,
+        subheadline: String,
+        image: Image,
+        actionTitle: String = "Retry",
+        actionSymbol: SFSymbol = .arrowClockwise,
+        action: (() -> Void)? = nil
+    ) where Content == EmptyView {
+        self.title = title
+        self.message = subheadline
+        self.image = image
+        self.content = nil
+        self.actionTitle = actionTitle
+        self.actionSymbol = actionSymbol
+        self.action = action
+    }
+}
+@available(iOS, introduced: 14.0, deprecated: 16.0, renamed: "ContentUnavailableView")
 public struct ContentUnavailableView<Content>: View where Content: View {
     let title: String
     let message: String
@@ -46,7 +117,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         actionTitle: String = "Retry",
         actionSymbol: SFSymbol = .arrowClockwise,
         action: (() -> Void)? = nil,
-        @ViewBuilder content: @escaping () -> Content = { EmptyView() }
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self.title = title
         self.message = message
@@ -63,7 +134,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         actionTitle: String = "Retry",
         actionSymbol: SFSymbol = .arrowClockwise,
         action: (() -> Void)? = nil,
-        @ViewBuilder content: @escaping () -> Content = { EmptyView() }
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self.title = title
         self.message = ""
@@ -80,7 +151,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         actionTitle: String = "Retry",
         actionSymbol: SFSymbol = .arrowClockwise,
         action: (() -> Void)? = nil,
-        @ViewBuilder content: @escaping () -> Content = { EmptyView() }
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self.title = title
         self.message = ""
@@ -98,7 +169,7 @@ public struct ContentUnavailableView<Content>: View where Content: View {
         actionTitle: String = "Retry",
         actionSymbol: SFSymbol = .arrowClockwise,
         action: (() -> Void)? = nil,
-        @ViewBuilder content: @escaping () -> Content = { EmptyView() }
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self.title = title
         self.message = description
@@ -114,17 +185,19 @@ public struct ContentUnavailableView<Content>: View where Content: View {
                 .font(.largeTitle)
                 .imageScale(.large)
             Text(title)
-                .font(.title.monospaced().bold()).foregroundStyle(.primary)
+                .font(.system(.title, .rounded, .bold))
+                .multilineTextAlignment(.center).foregroundStyle(.primary)
+
             Text(message)
-                .font(.subheadline.bold().monospaced())
+                .font(.system(.subheadline, .rounded, .medium))
                 .multilineTextAlignment(.center).foregroundStyle(.secondary)
                 .highlightEffect()
             content?()
             if let _ = action {
                 AsyncButton(action: action ?? { await refresh?() ?? dismiss() }, label: {
-                    Label(.init(actionTitle), symbol: .arrowClockwise)
-                        .padding(.horizontal)
-                        .font(.subheadline.bold().monospaced())
+                    Label(.init(actionTitle), symbol: actionSymbol)
+                        .font(.system(.headline, .rounded, .medium))
+                        .padding(2, 8)
                         .hoverEffect()
 
                 }).padding().buttonStyle(.refresh).clipped()
