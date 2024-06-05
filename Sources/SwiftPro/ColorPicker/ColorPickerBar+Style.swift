@@ -71,7 +71,6 @@ public extension View {
 private extension ColorPickerBar.Style {
 
     struct Key: EnvironmentKey {
-
         public static var defaultValue: ColorPickerBar.Style = .standard
     }
 }

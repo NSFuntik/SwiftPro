@@ -32,7 +32,7 @@ public extension SFSymbol {
     @Sendable static func findSymbol(by input: String) async -> SFSymbol? {
         guard input.isEmpty == false else { return nil }
         
-        return await Task { () async -> SFSymbol? in await MLSymbolFinder.findMostSimilarSymbol(to: input) }.value
+        return await Task(priority: .utility) { () async -> SFSymbol? in await MLSymbolFinder.findMostSimilarSymbol(to: input) }.value
     }
   
 }

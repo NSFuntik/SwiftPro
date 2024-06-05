@@ -76,12 +76,12 @@ public extension UIDevice {
         } else {
             debugPrint("Unable to retrieve device ID.")
             debugPrint("Requesting tracking authorization.")
-            if let id = UserDefaults.standard.string(forKey: "deviceID") {
+            if let id = suite.string(forKey: "deviceID") {
                 debugPrint("UserDefaults Device ID: \(id)")
                 return id
             } else {
                 let id = UUID().uuidString
-                UserDefaults.standard.set(id, forKey: "deviceID")
+                suite.set(id, forKey: "deviceID")
                 debugPrint("NEW UserDefaults Device ID: \(id)")
                 return id
             }

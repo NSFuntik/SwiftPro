@@ -167,11 +167,11 @@ public enum MIMEType: Identifiable, CaseIterable, RawRepresentable {
     }
 
     public enum Text: String, CaseIterable, Identifiable {
-        case plain, css, htc, html, jad, mathml, xml, wml
+        case plain, css, csv, htc, html, jad, mathml, xml, wml
 
         public var id: String {
             switch self {
-            case .plain, .css, .html, .mathml, .xml: return rawValue
+						case .plain, .css, .html, .mathml, .xml, .csv: return rawValue
             case .jad: return "vnd.sun.j2me.app-descriptor"
             case .wml: return "vnd.wap.wml"
             case .htc: return "x-component"

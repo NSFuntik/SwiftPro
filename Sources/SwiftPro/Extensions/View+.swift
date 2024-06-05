@@ -6,7 +6,11 @@
 //
 
 import SwiftUI
-
+//public extension Color {
+//	static var accent: Color {
+//		accentColor
+//	}
+//}
 public extension View {
     func embedInNavigation() -> some View {
         NavigationView { self }
